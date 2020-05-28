@@ -6,3 +6,4 @@
 *.gen.gz*
 *.vcf.gz*
 *.vcf*
+.Rproj.user

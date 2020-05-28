@@ -453,17 +453,18 @@ AEDB$AsymptSympt[sympt == 1 | sympt == 7 | sympt == 13 | sympt == 2 | sympt == 3
 AEDB$AsymptSympt[sympt == 4 | sympt == 14 | sympt == 15 | sympt == 8 | sympt == 11 | sympt == 5 | sympt == 9 | sympt == 10 | sympt == 12 | sympt == 16 | sympt == 17] <- "Ocular and others"
 detach(AEDB)
 
-AEDB.temp <- subset(AEDB,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", "sympt", "Symptoms.5G", "AsymptSympt"))
-require(labelled)
-AEDB.temp$Gender <- to_factor(AEDB.temp$Gender)
-AEDB.temp$Hospital <- to_factor(AEDB.temp$Hospital)
-AEDB.temp$Artery_summary <- to_factor(AEDB.temp$Artery_summary)
+# AEDB.temp <- subset(AEDB,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", "sympt", "Symptoms.5G", "AsymptSympt"))
+# require(labelled)
+# AEDB.temp$Gender <- to_factor(AEDB.temp$Gender)
+# AEDB.temp$Hospital <- to_factor(AEDB.temp$Hospital)
+# AEDB.temp$Artery_summary <- to_factor(AEDB.temp$Artery_summary)
+# 
+# DT::datatable(AEDB.temp[1:10,], caption = "Excerpt of the whole AEDB.", rownames = FALSE)
+# 
+# table(AEDB.temp$Symptoms.5G, AEDB.temp$AsymptSympt)
+# 
+# rm(AEDB.temp)
 
-DT::datatable(AEDB.temp[1:10,], caption = "Excerpt of the whole AEDB.", rownames = FALSE)
-
-table(AEDB.temp$Symptoms.5G, AEDB.temp$AsymptSympt)
-
-rm(AEDB.temp)
 ```
 
 We will also fix the _plaquephenotypes_ variable.  
@@ -489,16 +490,15 @@ AEDB$OverallPlaquePhenotype[plaquephenotype == 2] <- "fibroatheromatous"
 AEDB$OverallPlaquePhenotype[plaquephenotype == 3] <- "atheromatous"
 detach(AEDB)
 
-AEDB.temp <- subset(AEDB,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", "plaquephenotype", "OverallPlaquePhenotype"))
-require(labelled)
-AEDB.temp$Gender <- to_factor(AEDB.temp$Gender)
-AEDB.temp$Hospital <- to_factor(AEDB.temp$Hospital)
-AEDB.temp$Artery_summary <- to_factor(AEDB.temp$Artery_summary)
-
-DT::datatable(AEDB.temp[1:10,], caption = "Excerpt of the whole AEDB.", rownames = FALSE)
-
-rm(AEDB.temp)
-
+# AEDB.temp <- subset(AEDB,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", "plaquephenotype", "OverallPlaquePhenotype"))
+# require(labelled)
+# AEDB.temp$Gender <- to_factor(AEDB.temp$Gender)
+# AEDB.temp$Hospital <- to_factor(AEDB.temp$Hospital)
+# AEDB.temp$Artery_summary <- to_factor(AEDB.temp$Artery_summary)
+# 
+# DT::datatable(AEDB.temp[1:10,], caption = "Excerpt of the whole AEDB.", rownames = FALSE)
+# 
+# rm(AEDB.temp)
 
 ```
 
@@ -515,16 +515,16 @@ AEDB$DiabetesStatus[DM.composite == 0] <- "Control (no Diabetes Dx/Med)"
 AEDB$DiabetesStatus[DM.composite == 1] <- "Diabetes"
 detach(AEDB)
 
-AEDB.temp <- subset(AEDB,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", "DM.composite", "DiabetesStatus"))
-require(labelled)
-AEDB.temp$Gender <- to_factor(AEDB.temp$Gender)
-AEDB.temp$Hospital <- to_factor(AEDB.temp$Hospital)
-AEDB.temp$Artery_summary <- to_factor(AEDB.temp$Artery_summary)
-AEDB.temp$DiabetesStatus <- to_factor(AEDB.temp$DiabetesStatus)
-
-DT::datatable(AEDB.temp[1:10,], caption = "Excerpt of the whole AEDB.", rownames = FALSE)
-
-rm(AEDB.temp)
+# AEDB.temp <- subset(AEDB,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", "DM.composite", "DiabetesStatus"))
+# require(labelled)
+# AEDB.temp$Gender <- to_factor(AEDB.temp$Gender)
+# AEDB.temp$Hospital <- to_factor(AEDB.temp$Hospital)
+# AEDB.temp$Artery_summary <- to_factor(AEDB.temp$Artery_summary)
+# AEDB.temp$DiabetesStatus <- to_factor(AEDB.temp$DiabetesStatus)
+# 
+# DT::datatable(AEDB.temp[1:10,], caption = "Excerpt of the whole AEDB.", rownames = FALSE)
+# 
+# rm(AEDB.temp)
 
 
 ```
@@ -601,7 +601,7 @@ ae.hospital <- ifelse(AEDB$Hospital == 1, "Antonius", "UMCU")
 table(ae.gender, ae.hospital, dnn = c("Sex", "Hospital"))
 ae.gender <- ifelse(AEDB$Gender == 0, "Female", "Male")
 table(ae.gender, AEDB$Artery_summary, dnn = c("Sex", "Artery"))
-table(ae.gender, AEDB$informedconsent, dnn = c("Sex", "IC"))
+# table(ae.gender, AEDB$informedconsent, dnn = c("Sex", "IC"))
 
 rm(ae.gender, ae.hospital)
 
@@ -3729,10 +3729,203 @@ The _secondary outcomes_ will be
   - fatal aneurysm rupture
   - other cardiovascular death..
 
+### 30- and 90-days FU events
+
+We will use 3-year follow-up, but we will also calculate 30 days and 90 days follow-up 'time-to-event' variables. On average there are 365.25 days in a year. We can calculate 30-days and 90-days follow-up time based on the three years follow-up. 
+
+```{r Calculate new FU cut-offs: maximum FU}
+cutt.off.30days = (1/365.25) * 30
+cutt.off.90days = (1/365.25) * 90
+
+# Fix maximum FU of 30 and 90 days
+AEDB <- AEDB %>%
+  mutate(
+    FU.cutt.off.30days = ifelse(max.followup <= cutt.off.30days, max.followup, cutt.off.30days),
+    FU.cutt.off.90days = ifelse(max.followup <= cutt.off.90days, max.followup, cutt.off.90days)
+  ) 
+
+AEDB.temp <- subset(AEDB,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", 
+                                      "max.followup", 
+                                      "FU.cutt.off.3years",
+                                      "FU.cutt.off.30days", 
+                                      "FU.cutt.off.90days"))
+require(labelled)
+AEDB.temp$Gender <- to_factor(AEDB.temp$Gender)
+AEDB.temp$Hospital <- to_factor(AEDB.temp$Hospital)
+AEDB.temp$Artery_summary <- to_factor(AEDB.temp$Artery_summary)
+
+DT::datatable(AEDB.temp[1:10,], caption = "Excerpt of the whole AEDB.", rownames = FALSE)
+
+rm(AEDB.temp)
+
+AEDB.CEA <- AEDB.CEA %>%
+  mutate(
+    FU.cutt.off.30days = ifelse(max.followup <= cutt.off.30days, max.followup, cutt.off.30days),
+    FU.cutt.off.90days = ifelse(max.followup <= cutt.off.90days, max.followup, cutt.off.90days)
+  ) 
+
+AEDB.CEA.temp <- subset(AEDB.CEA,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", 
+                                      "max.followup", 
+                                      "FU.cutt.off.3years",
+                                      "FU.cutt.off.30days", 
+                                      "FU.cutt.off.90days"))
+require(labelled)
+AEDB.CEA.temp$Gender <- to_factor(AEDB.CEA.temp$Gender)
+AEDB.CEA.temp$Hospital <- to_factor(AEDB.CEA.temp$Hospital)
+AEDB.CEA.temp$Artery_summary <- to_factor(AEDB.CEA.temp$Artery_summary)
+
+DT::datatable(AEDB.CEA.temp[1:10,], caption = "Excerpt of the whole AEDB.CEA.", rownames = FALSE)
+
+rm(AEDB.CEA.temp)
+
+
+```
+
+Here we will calculate the new 30- and 90-days follow-up of the events and their event-times of interest:
+
+- MACE (`epmajor.3years`)
+- Stroke (`epstroke.3years`)
+- Coronary events (`epcoronary.3years`)
+- Cardiovascular death (`epcvdeath.3years`)
+
+
+```{r Calculate new FU cut-offs: times}
+avg_days_in_year = 365.25
+cutt.off.30days.scaled <- cutt.off.30days * 365.25
+cutt.off.90days.scaled <- cutt.off.90days * 365.25
+# Event times
+AEDB <- AEDB %>%
+  mutate(
+    ep_major_t_30days = ifelse(ep_major_t_3years * avg_days_in_year <= cutt.off.30days.scaled, 
+                               ep_major_t_3years * avg_days_in_year, cutt.off.30days.scaled),
+    ep_stroke_t_30days = ifelse(ep_stroke_t_3years * avg_days_in_year <= cutt.off.30days.scaled, 
+                                ep_stroke_t_3years * avg_days_in_year, cutt.off.30days.scaled),
+    ep_coronary_t_30days = ifelse(ep_coronary_t_3years * avg_days_in_year <= cutt.off.30days.scaled, 
+                                  ep_coronary_t_3years * avg_days_in_year, cutt.off.30days.scaled),
+    ep_cvdeath_t_30days = ifelse(ep_cvdeath_t_3years * avg_days_in_year <= cutt.off.30days.scaled, 
+                                 ep_cvdeath_t_3years * avg_days_in_year, cutt.off.30days.scaled),
+    ep_major_t_90days = ifelse(ep_major_t_3years * avg_days_in_year <= cutt.off.90days.scaled, 
+                               ep_major_t_3years * avg_days_in_year, cutt.off.90days.scaled),
+    ep_stroke_t_90days = ifelse(ep_stroke_t_3years * avg_days_in_year <= cutt.off.90days.scaled, 
+                                ep_stroke_t_3years * avg_days_in_year, cutt.off.90days.scaled),
+    ep_coronary_t_90days = ifelse(ep_coronary_t_3years * avg_days_in_year <= cutt.off.90days.scaled, 
+                                  ep_coronary_t_3years * avg_days_in_year, cutt.off.90days.scaled),
+    ep_cvdeath_t_90days = ifelse(ep_cvdeath_t_3years * avg_days_in_year <= cutt.off.90days.scaled, 
+                                 ep_cvdeath_t_3years * avg_days_in_year, cutt.off.90days.scaled)
+  ) 
+
+AEDB.CEA <- AEDB.CEA %>%
+  mutate(
+    ep_major_t_30days = ifelse(ep_major_t_3years * avg_days_in_year <= cutt.off.30days.scaled, 
+                               ep_major_t_3years * avg_days_in_year, cutt.off.30days.scaled),
+    ep_stroke_t_30days = ifelse(ep_stroke_t_3years * avg_days_in_year <= cutt.off.30days.scaled, 
+                                ep_stroke_t_3years * avg_days_in_year, cutt.off.30days.scaled),
+    ep_coronary_t_30days = ifelse(ep_coronary_t_3years * avg_days_in_year <= cutt.off.30days.scaled, 
+                                  ep_coronary_t_3years * avg_days_in_year, cutt.off.30days.scaled),
+    ep_cvdeath_t_30days = ifelse(ep_cvdeath_t_3years * avg_days_in_year <= cutt.off.30days.scaled, 
+                                 ep_cvdeath_t_3years * avg_days_in_year, cutt.off.30days.scaled),
+    ep_major_t_90days = ifelse(ep_major_t_3years * avg_days_in_year <= cutt.off.90days.scaled, 
+                               ep_major_t_3years * avg_days_in_year, cutt.off.90days.scaled),
+    ep_stroke_t_90days = ifelse(ep_stroke_t_3years * avg_days_in_year <= cutt.off.90days.scaled, 
+                                ep_stroke_t_3years * avg_days_in_year, cutt.off.90days.scaled),
+    ep_coronary_t_90days = ifelse(ep_coronary_t_3years * avg_days_in_year <= cutt.off.90days.scaled, 
+                                  ep_coronary_t_3years * avg_days_in_year, cutt.off.90days.scaled),
+    ep_cvdeath_t_90days = ifelse(ep_cvdeath_t_3years * avg_days_in_year <= cutt.off.90days.scaled, 
+                                 ep_cvdeath_t_3years * avg_days_in_year, cutt.off.90days.scaled)
+  ) 
+
+```
+
+
+```{r Cox-regressions: new times}
+
+attach(AEDB)
+AEDB[,"epmajor.30days"] <- AEDB$epmajor.3years
+AEDB$epmajor.30days[epmajor.3years == 1 & ep_major_t_3years > cutt.off.30days] <- 0
+
+AEDB[,"epstroke.30days"] <- AEDB$epstroke.3years
+AEDB$epstroke.30days[epstroke.3years == 1 & ep_stroke_t_3years > cutt.off.30days] <- 0
+
+AEDB[,"epcoronary.30days"] <- AEDB$epcoronary.3years
+AEDB$epcoronary.30days[epcoronary.3years == 1 & ep_coronary_t_3years > cutt.off.30days] <- 0
+
+AEDB[,"epcvdeath.30days"] <- AEDB$epcvdeath.3years
+AEDB$epcvdeath.30days[epcvdeath.3years == 1 & ep_cvdeath_t_3years > cutt.off.30days] <- 0
+
+AEDB[,"epmajor.90days"] <- AEDB$epmajor.3years
+AEDB$epmajor.90days[epmajor.3years == 1 & ep_major_t_3years > cutt.off.90days] <- 0
+
+AEDB[,"epstroke.90days"] <- AEDB$epstroke.3years
+AEDB$epstroke.90days[epstroke.3years == 1 & ep_stroke_t_3years > cutt.off.90days] <- 0
+
+AEDB[,"epcoronary.90days"] <- AEDB$epcoronary.3years
+AEDB$epcoronary.90days[epcoronary.3years == 1 & ep_coronary_t_3years > cutt.off.90days] <- 0
+
+AEDB[,"epcvdeath.90days"] <- AEDB$epcvdeath.3years
+AEDB$epcvdeath.90days[epcvdeath.3years == 1 & ep_cvdeath_t_3years > cutt.off.90days] <- 0
+
+detach(AEDB)
+
+AEDB.temp <- subset(AEDB,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", 
+                                      "epmajor.3years", "epstroke.3years", "epcoronary.3years", "epcvdeath.3years",
+                                      "epmajor.30days", "epstroke.30days", "epcoronary.30days", "epcvdeath.30days",
+                                      "epmajor.90days", "epstroke.90days", "epcoronary.90days", "epcvdeath.90days"))
+require(labelled)
+AEDB.temp$Gender <- to_factor(AEDB.temp$Gender)
+AEDB.temp$Hospital <- to_factor(AEDB.temp$Hospital)
+AEDB.temp$Artery_summary <- to_factor(AEDB.temp$Artery_summary)
+
+DT::datatable(AEDB.temp[1:10,], caption = "Excerpt of the whole AEDB.", rownames = FALSE)
+
+rm(AEDB.temp)
+
+attach(AEDB.CEA)
+AEDB.CEA[,"epmajor.30days"] <- AEDB.CEA$epmajor.3years
+AEDB.CEA$epmajor.30days[epmajor.3years == 1 & ep_major_t_3years > cutt.off.30days] <- 0
+
+AEDB.CEA[,"epstroke.30days"] <- AEDB.CEA$epstroke.3years
+AEDB.CEA$epstroke.30days[epstroke.3years == 1 & ep_stroke_t_3years > cutt.off.30days] <- 0
+
+AEDB.CEA[,"epcoronary.30days"] <- AEDB.CEA$epcoronary.3years
+AEDB.CEA$epcoronary.30days[epcoronary.3years == 1 & ep_coronary_t_3years > cutt.off.30days] <- 0
+
+AEDB.CEA[,"epcvdeath.30days"] <- AEDB.CEA$epcvdeath.3years
+AEDB.CEA$epcvdeath.30days[epcvdeath.3years == 1 & ep_cvdeath_t_3years > cutt.off.30days] <- 0
+
+AEDB.CEA[,"epmajor.90days"] <- AEDB.CEA$epmajor.3years
+AEDB.CEA$epmajor.90days[epmajor.3years == 1 & ep_major_t_3years > cutt.off.90days] <- 0
+
+AEDB.CEA[,"epstroke.90days"] <- AEDB.CEA$epstroke.3years
+AEDB.CEA$epstroke.90days[epstroke.3years == 1 & ep_stroke_t_3years > cutt.off.90days] <- 0
+
+AEDB.CEA[,"epcoronary.90days"] <- AEDB.CEA$epcoronary.3years
+AEDB.CEA$epcoronary.90days[epcoronary.3years == 1 & ep_coronary_t_3years > cutt.off.90days] <- 0
+
+AEDB.CEA[,"epcvdeath.90days"] <- AEDB.CEA$epcvdeath.3years
+AEDB.CEA$epcvdeath.90days[epcvdeath.3years == 1 & ep_cvdeath_t_3years > cutt.off.90days] <- 0
+
+detach(AEDB.CEA)
+
+AEDB.CEA.temp <- subset(AEDB.CEA,  select = c("STUDY_NUMBER", "UPID", "Age", "Gender", "Hospital", "Artery_summary", 
+                                      "epmajor.3years", "epstroke.3years", "epcoronary.3years", "epcvdeath.3years",
+                                      "epmajor.30days", "epstroke.30days", "epcoronary.30days", "epcvdeath.30days",
+                                      "epmajor.90days", "epstroke.90days", "epcoronary.90days", "epcvdeath.90days"))
+require(labelled)
+AEDB.CEA.temp$Gender <- to_factor(AEDB.CEA.temp$Gender)
+AEDB.CEA.temp$Hospital <- to_factor(AEDB.CEA.temp$Hospital)
+AEDB.CEA.temp$Artery_summary <- to_factor(AEDB.CEA.temp$Artery_summary)
+
+DT::datatable(AEDB.CEA.temp[1:10,], caption = "Excerpt of the whole AEDB.CEA.", rownames = FALSE)
+
+rm(AEDB.CEA.temp)
+
+
+
+```
+
 ### Sanity checks
 
 First we do some sanity checks and inventory the time-to-event and event variables.
-
 ```{r Cox-regressions: General}
 # Reference: https://bioconductor.org/packages/devel/bioc/vignettes/MultiAssayExperiment/inst/doc/QuickStartMultiAssay.html
 # If you want to suppress warnings and messages when installing/loading packages
@@ -3788,8 +3981,9 @@ endpoints = c("epmajor.3years",
 
 cat("* Check the cases per event type - for sanity.")
 for (events in endpoints){
+  require(labelled)
   print(paste0("Printing the summary of: ",events))
-  print(summary(AEDB.CEA[,events]))
+  # print(summary(AEDB.CEA[,events]))
   print(table(AEDB.CEA[,events]))
 }
 
@@ -3809,6 +4003,64 @@ for (eventtime in times){
  ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.EventDistributionPerYear.",eventtime,".pdf"), plot = last_plot())
 }
 
+times30 = c("ep_major_t_30days", 
+          "ep_stroke_t_30days", "ep_coronary_t_30days", "ep_cvdeath_t_30days")
+
+endpoints30 = c("epmajor.30days", 
+              "epstroke.30days", "epcoronary.30days", "epcvdeath.30days")
+
+cat("* Check the cases per event type - for sanity.")
+for (events in endpoints30){
+  print(paste0("Printing the summary of: ",events))
+  # print(summary(AEDB.CEA[,events]))
+  print(table(AEDB.CEA[,events]))
+}
+
+cat("* Check distribution of events over time - for sanity.")
+for (eventtimes in times30){
+  print(paste0("Printing the summary of: ",eventtimes))
+  print(summary(AEDB.CEA[,eventtimes]))
+}
+
+for (eventtime in times30){
+  
+  print(paste0("Printing the distribution of: ",eventtime))
+  p <- gghistogram(AEDB.CEA, x = eventtime, y = "..count..",
+              main = eventtime, bins = 15, 
+              xlab = "days", color = uithof_color[16], fill = uithof_color[16], ggtheme = theme_minimal()) 
+ print(p)
+ ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.EventDistributionPer30Days.",eventtime,".pdf"), plot = last_plot())
+}
+
+times90 = c("ep_major_t_90days", 
+          "ep_stroke_t_90days", "ep_coronary_t_90days", "ep_cvdeath_t_90days")
+
+endpoints90 = c("epmajor.90days", 
+              "epstroke.90days", "epcoronary.90days", "epcvdeath.90days")
+
+cat("* Check the cases per event type - for sanity.")
+for (events in endpoints90){
+  print(paste0("Printing the summary of: ",events))
+  # print(summary(AEDB.CEA[,events]))
+  print(table(AEDB.CEA[,events]))
+}
+
+cat("* Check distribution of events over time - for sanity.")
+for (eventtimes in times90){
+  print(paste0("Printing the summary of: ",eventtimes))
+  print(summary(AEDB.CEA[,eventtimes]))
+}
+
+for (eventtime in times90){
+  
+  print(paste0("Printing the distribution of: ",eventtime))
+  p <- gghistogram(AEDB.CEA, x = eventtime, y = "..count..",
+              main = eventtime, bins = 15, 
+              xlab = "days", color = uithof_color[16], fill = uithof_color[16], ggtheme = theme_minimal()) 
+ print(p)
+ ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.EventDistributionPer90Days.",eventtime,".pdf"), plot = last_plot())
+}
+
 
 ```
 
@@ -3822,6 +4074,7 @@ Let's perform the actual Cox-regressions. We will apply a couple of models:
 - Model 3: same to model 2, with additional adjustments for circulating CRP levels
 - Model 4: same to model 2 with additional adjustment for IL6 levels in the plaque
 
+#### 3 years follow-up
 
 *MODEL 1*
 ```{r Cox-regression Analysis: Simple model}
@@ -4307,6 +4560,994 @@ rm(head.style)
 ```
 
 
+#### 30-days follow-up
+
+*MODEL 1*
+```{r Cox-regression Analysis: Simple model, 30 days}
+# Set up a dataframe to receive results
+COX.results <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+
+# Looping over each protein/endpoint/time combination
+for (i in 1:length(times30)){
+  eptime = times30[i]
+  ep = endpoints30[i]
+  cat(paste0("* Analyzing the effect of plaque proteins on [",ep,"].\n"))
+  cat(" - creating temporary SE for this work.\n")
+  TEMP.DF = as.data.frame(AEDB.CEA)
+  cat(" - making a 'Surv' object and adding this to temporary dataframe.\n")
+  TEMP.DF$event <- as.integer(TEMP.DF[,ep])
+  TEMP.DF$y <- Surv(time = TEMP.DF[,eptime], event = TEMP.DF$event)
+  cat(" - making strata of each of the plaque proteins and start survival analysis.\n")
+  
+  for (protein in 1:length(TRAITS.PROTEIN.RANK)){
+    cat(paste0("   > processing [",TRAITS.PROTEIN.RANK[protein],"]; ",protein," out of ",length(TRAITS.PROTEIN.RANK)," proteins.\n"))
+    # splitting into two groups
+    TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]] <- cut2(TEMP.DF[,TRAITS.PROTEIN.RANK[protein]], g = 2)
+    cat(paste0("   > cross tabulation of ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    show(table(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]))
+    
+    cat(paste0("\n   > fitting the model for ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    fit <- survfit(as.formula(paste0("y ~ ", TRAITS.PROTEIN.RANK[protein])), data = TEMP.DF)
+    
+    cat(paste0("\n   > make a Kaplan-Meier-shizzle...\n"))
+    # make Kaplan-Meier curve and save it
+    show(ggsurvplot(fit, data = TEMP.DF,
+                    palette = c("#DB003F", "#1290D9"),
+                    # palete = c("F59D10", "#DB003F", "#49A01D", "#1290D9"),
+                    linetype = c(1,2),
+                    ylim = c(0.75, 1),
+                    # linetype = c(1,2,3,4),
+                    # conf.int = FALSE, conf.int.fill = "#595A5C", conf.int.alpha = 0.1,
+                    pval = FALSE, pval.method = FALSE, pval.size = 4,
+                    risk.table = TRUE, risk.table.y.text = FALSE, tables.y.text.col = TRUE, fontsize = 4,
+                    censor = FALSE,
+                    legend = "right",
+                    legend.title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+                    legend.labs = c("low", "high"),
+                    title = paste0("Risk of ",ep,""), xlab = "Time [days]", font.main = c(16, "bold", "black")))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.survival.",ep,".2G.",
+                               TRAITS.PROTEIN.RANK[protein],".30days.pdf"), width = 12, height = 10, onefile = FALSE)
+
+    cat(paste0("\n   > perform the Cox-regression fashizzle and plot it...\n"))
+    ### Do Cox-regression and plot it
+    
+    ### MODEL 1 (Simple model)
+    cox = coxph(Surv(TEMP.DF[,eptime], event) ~ TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]+Age+Gender, data = TEMP.DF)
+    coxplot = coxph(Surv(TEMP.DF[,eptime], event) ~ strata(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]])+Age+Gender, data = TEMP.DF)
+
+    plot(survfit(coxplot), main = paste0("Cox proportional hazard of [",ep,"] per [",eptime,"]."),
+         ylim = c(0.75, 1), xlim = c(0,3), col = c("#595A5C", "#DB003F", "#1290D9"),
+         # ylim = c(0, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         lty = c(1,2), lwd = 2,
+         ylab = "Suvival probability", xlab = "FU time [days]",
+         mark.time = FALSE, axes = FALSE, bty = "n")
+    legend("topright",
+           c("low", "high"),
+           title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+           col = c("#DB003F", "#1290D9"),
+           lty = c(1,2), lwd = 2,
+           bty = "n")
+    axis(side = 1, at = seq(0, 3, by = 1))
+    axis(side = 2, at = seq(0, 1, by = 0.2))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.Cox.",ep,".2G.",
+                               # Today,".AEDB.CEA.Cox.",ep,".4G.",
+                               TRAITS.PROTEIN.RANK[protein],".MODEL1.30days.pdf"), height = 12, width = 10, onefile = TRUE)
+    show(summary(cox))
+
+    cat(paste0("\n   > writing the Cox-regression fashizzle to Excel...\n"))
+
+    COX.results.TEMP <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+    COX.results.TEMP[1,] = COX.STAT(cox, "AEDB.CEA", ep, TRAITS.PROTEIN.RANK[protein])
+    COX.results = rbind(COX.results, COX.results.TEMP)
+
+  }
+}
+
+cat("- Edit the column names...\n")
+colnames(COX.results) = c("Dataset", "Outcome", "CpG",
+                          "Beta", "s.e.m.",
+                          "HR", "low95CI", "up95CI",
+                          "Z-value", "P-value", "SampleSize", "N_events")
+
+cat("- Correct the variable types...\n")
+COX.results$Beta <- as.numeric(COX.results$Beta)
+COX.results$s.e.m. <- as.numeric(COX.results$s.e.m.)
+COX.results$HR <- as.numeric(COX.results$HR)
+COX.results$low95CI <- as.numeric(COX.results$low95CI)
+COX.results$up95CI <- as.numeric(COX.results$up95CI)
+COX.results$`Z-value` <- as.numeric(COX.results$`Z-value`)
+COX.results$`P-value` <- as.numeric(COX.results$`P-value`)
+COX.results$SampleSize <- as.numeric(COX.results$SampleSize)
+COX.results$N_events <- as.numeric(COX.results$N_events)
+
+AEDB.CEA.COX.results <- COX.results
+
+# Save the data
+library(openxlsx)
+cat("- Writing results to Excel-file...\n")
+head.style <- createStyle(textDecoration = "BOLD")
+write.xlsx(AEDB.CEA.COX.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Cox.2G.MODEL1.30days.xlsx"),
+           creator = "Sander W. van der Laan",
+           sheetName = "Results", headerStyle = head.style,
+           row.names = FALSE, col.names = TRUE, overwrite = TRUE)
+
+# Removing intermediates
+cat("- Removing intermediate files...\n")
+#rm(TEMP.DF, protein, fit, cox, coxplot, COX.results, COX.results.TEMP, head.style, AEDB.CEA.COX.results)
+
+#rm(head.style)
+
+```
+
+*MODEL 2*
+```{r Cox-regression Analysis: MODEL 2, 30 days}
+# Set up a dataframe to receive results
+COX.results <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+
+# Looping over each protein/endpoint/time combination
+for (i in 1:length(times30)){
+  eptime = times30[i]
+  ep = endpoints30[i]
+  cat(paste0("* Analyzing the effect of plaque proteins on [",ep,"].\n"))
+  cat(" - creating temporary SE for this work.\n")
+  TEMP.DF = as.data.frame(AEDB.CEA)
+  cat(" - making a 'Surv' object and adding this to temporary dataframe.\n")
+  TEMP.DF$event <- as.integer(TEMP.DF[,ep])
+  #as.integer(TEMP.DF[,ep] == "Excluded")
+
+  TEMP.DF$y <- Surv(time = TEMP.DF[,eptime], event = TEMP.DF$event)
+  cat(" - making strata of each of the plaque proteins and start survival analysis.\n")
+  
+  for (protein in 1:length(TRAITS.PROTEIN.RANK)){
+    cat(paste0("   > processing [",TRAITS.PROTEIN.RANK[protein],"]; ",protein," out of ",length(TRAITS.PROTEIN.RANK)," proteins.\n"))
+    # splitting into two groups
+    TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]] <- cut2(TEMP.DF[,TRAITS.PROTEIN.RANK[protein]], g = 2)
+    cat(paste0("   > cross tabulation of ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    show(table(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]))
+    
+    cat(paste0("\n   > fitting the model for ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    fit <- survfit(as.formula(paste0("y ~ ", TRAITS.PROTEIN.RANK[protein])), data = TEMP.DF)
+    
+    cat(paste0("\n   > make a Kaplan-Meier-shizzle...\n"))
+    # make Kaplan-Meier curve and save it
+    show(ggsurvplot(fit, data = TEMP.DF,
+                    palette = c("#DB003F", "#1290D9"),
+                    # palete = c("F59D10", "#DB003F", "#49A01D", "#1290D9"),
+                    linetype = c(1,2),
+                    ylim = c(0.75, 1),
+                    # linetype = c(1,2,3,4),
+                    # conf.int = FALSE, conf.int.fill = "#595A5C", conf.int.alpha = 0.1,
+                    pval = FALSE, pval.method = FALSE, pval.size = 4,
+                    risk.table = TRUE, risk.table.y.text = FALSE, tables.y.text.col = TRUE, fontsize = 4,
+                    censor = FALSE,
+                    legend = "right",
+                    legend.title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+                    legend.labs = c("low", "high"),
+                    title = paste0("Risk of ",ep,""), xlab = "Time [days]", font.main = c(16, "bold", "black")))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.survival.",ep,".2G.",
+                               TRAITS.PROTEIN.RANK[protein],".30days.pdf"), width = 12, height = 10, onefile = FALSE)
+
+    cat(paste0("\n   > perform the Cox-regression fashizzle and plot it...\n"))
+    ### Do Cox-regression and plot it
+    
+    ### MODEL 2 adjusted for age, sex, hypertension, diabetes, smoking, LDL-C levels, lipid-lowering drugs, antiplatelet drugs, eGFR, BMI, history of CVD, level of stenosis
+    cox = coxph(Surv(TEMP.DF[,eptime], event) ~ TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose, data = TEMP.DF)
+    coxplot = coxph(Surv(TEMP.DF[,eptime], event) ~ strata(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]])+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose, data = TEMP.DF)
+
+  
+    plot(survfit(coxplot), main = paste0("Cox proportional hazard of [",ep,"] per [",eptime,"]."),
+         ylim = c(0.75, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         # ylim = c(0, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         lty = c(1,2), lwd = 2,
+         ylab = "Suvival probability", xlab = "FU time [days]",
+         mark.time = FALSE, axes = FALSE, bty = "n")
+    legend("topright",
+           c("low", "high"),
+           title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+           col = c("#DB003F", "#1290D9"),
+           lty = c(1,2), lwd = 2,
+           bty = "n")
+    axis(side = 1, at = seq(0, 3, by = 1))
+    axis(side = 2, at = seq(0, 1, by = 0.2))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.Cox.",ep,".2G.",
+                               # Today,".AEDB.CEA.Cox.",ep,".4G.",
+                               TRAITS.PROTEIN.RANK[protein],".MODEL2.30days.pdf"), height = 12, width = 10, onefile = TRUE)
+
+    show(summary(cox))
+
+    cat(paste0("\n   > writing the Cox-regression fashizzle to Excel...\n"))
+
+    COX.results.TEMP <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+    COX.results.TEMP[1,] = COX.STAT(cox, "AEDB.CEA", ep, TRAITS.PROTEIN.RANK[protein])
+    COX.results = rbind(COX.results, COX.results.TEMP)
+
+  }
+}
+
+cat("- Edit the column names...\n")
+colnames(COX.results) = c("Dataset", "Outcome", "CpG",
+                          "Beta", "s.e.m.",
+                          "HR", "low95CI", "up95CI",
+                          "Z-value", "P-value", "SampleSize", "N_events")
+
+cat("- Correct the variable types...\n")
+COX.results$Beta <- as.numeric(COX.results$Beta)
+COX.results$s.e.m. <- as.numeric(COX.results$s.e.m.)
+COX.results$HR <- as.numeric(COX.results$HR)
+COX.results$low95CI <- as.numeric(COX.results$low95CI)
+COX.results$up95CI <- as.numeric(COX.results$up95CI)
+COX.results$`Z-value` <- as.numeric(COX.results$`Z-value`)
+COX.results$`P-value` <- as.numeric(COX.results$`P-value`)
+COX.results$SampleSize <- as.numeric(COX.results$SampleSize)
+COX.results$N_events <- as.numeric(COX.results$N_events)
+
+AEDB.CEA.COX.results <- COX.results
+
+# Save the data
+cat("- Writing results to Excel-file...\n")
+head.style <- createStyle(textDecoration = "BOLD")
+write.xlsx(AEDB.CEA.COX.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Cox.2G.MODEL2.30days.xlsx"),
+           creator = "Sander W. van der Laan",
+           sheetName = "Results", headerStyle = head.style,
+           row.names = FALSE, col.names = TRUE, overwrite = TRUE)
+
+# Removing intermediates
+cat("- Removing intermediate files...\n")
+rm(TEMP.DF, protein, fit, cox, coxplot, COX.results, COX.results.TEMP, head.style, AEDB.CEA.COX.results)
+
+rm(head.style)
+
+```
+
+*MODEL 3*
+
+> Note that here we have very few events for `MCP1_pg_ug_2015_rank`, and therefore created a new list of proteins to test _without_ this protein. This has likely to do with missing data in the risk factors/confounders included in the model.
+
+```{r Cox-regression Analysis: MODEL 3, 30 days}
+# Set up a dataframe to receive results
+TRAITS.PROTEIN.RANK.model3 = c("IL6_rank", "MCP1_rank", "IL6_pg_ug_2015_rank", "IL6R_pg_ug_2015_rank")
+COX.results <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+
+# Looping over each protein/endpoint/time combination
+for (i in 1:length(times30)){
+  eptime = times30[i]
+  ep = endpoints30[i]
+  cat(paste0("* Analyzing the effect of plaque proteins on [",ep,"].\n"))
+  cat(" - creating temporary SE for this work.\n")
+  TEMP.DF = as.data.frame(AEDB.CEA)
+  cat(" - making a 'Surv' object and adding this to temporary dataframe.\n")
+  TEMP.DF$event <- as.integer(TEMP.DF[,ep])
+  #as.integer(TEMP.DF[,ep] == "Excluded")
+
+  TEMP.DF$y <- Surv(time = TEMP.DF[,eptime], event = TEMP.DF$event)
+  cat(" - making strata of each of the plaque proteins and start survival analysis.\n")
+  
+  for (protein in 1:length(TRAITS.PROTEIN.RANK.model3)){
+    cat(paste0("   > processing [",TRAITS.PROTEIN.RANK.model3[protein],"]; ",protein," out of ",length(TRAITS.PROTEIN.RANK.model3)," proteins.\n"))
+    # splitting into two groups
+    TEMP.DF[[ TRAITS.PROTEIN.RANK.model3[protein] ]] <- cut2(TEMP.DF[,TRAITS.PROTEIN.RANK.model3[protein]], g = 2)
+    cat(paste0("   > cross tabulation of ",TRAITS.PROTEIN.RANK.model3[protein],"-stratum.\n"))
+    show(table(TEMP.DF[[ TRAITS.PROTEIN.RANK.model3[protein] ]]))
+    
+    cat(paste0("\n   > fitting the model for ",TRAITS.PROTEIN.RANK.model3[protein],"-stratum.\n"))
+    fit <- survfit(as.formula(paste0("y ~ ", TRAITS.PROTEIN.RANK.model3[protein])), data = TEMP.DF)
+    
+    cat(paste0("\n   > make a Kaplan-Meier-shizzle...\n"))
+    # make Kaplan-Meier curve and save it
+    show(ggsurvplot(fit, data = TEMP.DF,
+                    palette = c("#DB003F", "#1290D9"),
+                    # palete = c("F59D10", "#DB003F", "#49A01D", "#1290D9"),
+                    linetype = c(1,2),
+                    ylim = c(0.75,1),
+                    # linetype = c(1,2,3,4),
+                    # conf.int = FALSE, conf.int.fill = "#595A5C", conf.int.alpha = 0.1,
+                    pval = FALSE, pval.method = FALSE, pval.size = 4,
+                    risk.table = TRUE, risk.table.y.text = FALSE, tables.y.text.col = TRUE, fontsize = 4,
+                    censor = FALSE,
+                    legend = "right",
+                    legend.title = paste0("",TRAITS.PROTEIN.RANK.model3[protein],""),
+                    legend.labs = c("low", "high"),
+                    title = paste0("Risk of ",ep,""), xlab = "Time [days]", font.main = c(16, "bold", "black")))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.survival.",ep,".2G.",
+                               TRAITS.PROTEIN.RANK.model3[protein],".30days.pdf"), width = 12, height = 10, onefile = FALSE)
+
+    cat(paste0("\n   > perform the Cox-regression fashizzle and plot it...\n"))
+    ### Do Cox-regression and plot it
+    
+    ### MODEL 3 same to model 2, with additional adjustments for circulating CRP levels
+    cox = coxph(Surv(TEMP.DF[,eptime], event) ~ TEMP.DF[[ TRAITS.PROTEIN.RANK.model3[protein] ]]+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose + hsCRP_plasma, data = TEMP.DF)
+    coxplot = coxph(Surv(TEMP.DF[,eptime], event) ~ strata(TEMP.DF[[ TRAITS.PROTEIN.RANK.model3[protein] ]])+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent +  Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose + hsCRP_plasma, data = TEMP.DF)
+
+  
+    plot(survfit(coxplot), main = paste0("Cox proportional hazard of [",ep,"] per [",eptime,"]."),
+         ylim = c(0.75, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         # ylim = c(0, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         lty = c(1,2), lwd = 2,
+         ylab = "Suvival probability", xlab = "FU time [days]",
+         mark.time = FALSE, axes = FALSE, bty = "n")
+    legend("topright",
+           c("low", "high"),
+           title = paste0("",TRAITS.PROTEIN.RANK.model3[protein],""),
+           col = c("#DB003F", "#1290D9"),
+           lty = c(1,2), lwd = 2,
+           bty = "n")
+    axis(side = 1, at = seq(0, 3, by = 1))
+    axis(side = 2, at = seq(0, 1, by = 0.2))
+
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.Cox.",ep,".2G.",
+                               # Today,".AEDB.CEA.Cox.",ep,".4G.",
+                               TRAITS.PROTEIN.RANK.model3[protein],".MODEL3.30days.pdf"), height = 12, width = 10, onefile = TRUE)
+
+    show(summary(cox))
+
+    cat(paste0("\n   > writing the Cox-regression fashizzle to Excel...\n"))
+
+    COX.results.TEMP <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+    COX.results.TEMP[1,] = COX.STAT(cox, "AEDB.CEA", ep, TRAITS.PROTEIN.RANK.model3[protein])
+    COX.results = rbind(COX.results, COX.results.TEMP)
+
+  }
+}
+
+cat("- Edit the column names...\n")
+colnames(COX.results) = c("Dataset", "Outcome", "CpG",
+                          "Beta", "s.e.m.",
+                          "HR", "low95CI", "up95CI",
+                          "Z-value", "P-value", "SampleSize", "N_events")
+
+cat("- Correct the variable types...\n")
+COX.results$Beta <- as.numeric(COX.results$Beta)
+COX.results$s.e.m. <- as.numeric(COX.results$s.e.m.)
+COX.results$HR <- as.numeric(COX.results$HR)
+COX.results$low95CI <- as.numeric(COX.results$low95CI)
+COX.results$up95CI <- as.numeric(COX.results$up95CI)
+COX.results$`Z-value` <- as.numeric(COX.results$`Z-value`)
+COX.results$`P-value` <- as.numeric(COX.results$`P-value`)
+COX.results$SampleSize <- as.numeric(COX.results$SampleSize)
+COX.results$N_events <- as.numeric(COX.results$N_events)
+
+AEDB.CEA.COX.results <- COX.results
+
+# Save the data
+cat("- Writing results to Excel-file...\n")
+head.style <- createStyle(textDecoration = "BOLD")
+write.xlsx(AEDB.CEA.COX.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Cox.2G.MODEL3.30days.xlsx"),
+           creator = "Sander W. van der Laan",
+           sheetName = "Results", headerStyle = head.style,
+           row.names = FALSE, col.names = TRUE, overwrite = TRUE)
+
+# Removing intermediates
+cat("- Removing intermediate files...\n")
+rm(TEMP.DF, protein, fit, cox, coxplot, COX.results, COX.results.TEMP, head.style, AEDB.CEA.COX.results)
+
+rm(head.style)
+
+```
+
+*MODEL 4*
+```{r Cox-regression Analysis: MODEL 4, 30 days}
+# Set up a dataframe to receive results
+COX.results <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+
+# Looping over each protein/endpoint/time combination
+for (i in 1:length(times30)){
+  eptime = times30[i]
+  ep = endpoints30[i]
+  cat(paste0("* Analyzing the effect of plaque proteins on [",ep,"].\n"))
+  cat(" - creating temporary SE for this work.\n")
+  TEMP.DF = as.data.frame(AEDB.CEA)
+  cat(" - making a 'Surv' object and adding this to temporary dataframe.\n")
+  TEMP.DF$event <- as.integer(TEMP.DF[,ep])
+  #as.integer(TEMP.DF[,ep] == "Excluded")
+
+  TEMP.DF$y <- Surv(time = TEMP.DF[,eptime], event = TEMP.DF$event)
+  cat(" - making strata of each of the plaque proteins and start survival analysis.\n")
+  
+  for (protein in 1:length(TRAITS.PROTEIN.RANK)){
+    cat(paste0("   > processing [",TRAITS.PROTEIN.RANK[protein],"]; ",protein," out of ",length(TRAITS.PROTEIN.RANK)," proteins.\n"))
+    # splitting into two groups
+    TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]] <- cut2(TEMP.DF[,TRAITS.PROTEIN.RANK[protein]], g = 2)
+    cat(paste0("   > cross tabulation of ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    show(table(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]))
+    
+    cat(paste0("\n   > fitting the model for ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    fit <- survfit(as.formula(paste0("y ~ ", TRAITS.PROTEIN.RANK[protein])), data = TEMP.DF)
+    
+    cat(paste0("\n   > make a Kaplan-Meier-shizzle...\n"))
+    # make Kaplan-Meier curve and save it
+    show(ggsurvplot(fit, data = TEMP.DF,
+                    palette = c("#DB003F", "#1290D9"),
+                    # palete = c("F59D10", "#DB003F", "#49A01D", "#1290D9"),
+                    linetype = c(1,2),
+                    ylim = c(0.75, 1),
+                    # linetype = c(1,2,3,4),
+                    # conf.int = FALSE, conf.int.fill = "#595A5C", conf.int.alpha = 0.1,
+                    pval = FALSE, pval.method = FALSE, pval.size = 4,
+                    risk.table = TRUE, risk.table.y.text = FALSE, tables.y.text.col = TRUE, fontsize = 4,
+                    censor = FALSE,
+                    legend = "right",
+                    legend.title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+                    legend.labs = c("low", "high"),
+                    title = paste0("Risk of ",ep,""), xlab = "Time [days]", font.main = c(16, "bold", "black")))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.survival.",ep,".2G.",
+                               TRAITS.PROTEIN.RANK[protein],"30days.pdf"), width = 12, height = 10, onefile = FALSE)
+
+    cat(paste0("\n   > perform the Cox-regression fashizzle and plot it...\n"))
+    ### Do Cox-regression and plot it
+    
+    ### MODEL 4 same to model 2 with additional adjustment for IL6 levels in the plaque
+    cox = coxph(Surv(TEMP.DF[,eptime], event) ~ TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose + IL6_pg_ug_2015_rank, data = TEMP.DF)
+    coxplot = coxph(Surv(TEMP.DF[,eptime], event) ~ strata(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]])+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose + IL6_pg_ug_2015_rank, data = TEMP.DF)
+  
+    plot(survfit(coxplot), main = paste0("Cox proportional hazard of [",ep,"] per [",eptime,"]."),
+         ylim = c(0.75, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         # ylim = c(0, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         lty = c(1,2), lwd = 2,
+         ylab = "Suvival probability", xlab = "FU time [days]",
+         mark.time = FALSE, axes = FALSE, bty = "n")
+    legend("topright",
+           c("low", "high"),
+           title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+           col = c("#DB003F", "#1290D9"),
+           lty = c(1,2), lwd = 2,
+           bty = "n")
+    axis(side = 1, at = seq(0, 3, by = 1))
+    axis(side = 2, at = seq(0, 1, by = 0.2))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.Cox.",ep,".2G.",
+                               # Today,".AEDB.CEA.Cox.",ep,".4G.",
+                               TRAITS.PROTEIN.RANK[protein],".MODEL4.30days.pdf"), height = 12, width = 10, onefile = TRUE)
+    show(summary(cox))
+
+    cat(paste0("\n   > writing the Cox-regression fashizzle to Excel...\n"))
+
+    COX.results.TEMP <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+    COX.results.TEMP[1,] = COX.STAT(cox, "AEDB.CEA", ep, TRAITS.PROTEIN.RANK[protein])
+    COX.results = rbind(COX.results, COX.results.TEMP)
+
+  }
+}
+
+cat("- Edit the column names...\n")
+colnames(COX.results) = c("Dataset", "Outcome", "CpG",
+                          "Beta", "s.e.m.",
+                          "HR", "low95CI", "up95CI",
+                          "Z-value", "P-value", "SampleSize", "N_events")
+
+cat("- Correct the variable types...\n")
+COX.results$Beta <- as.numeric(COX.results$Beta)
+COX.results$s.e.m. <- as.numeric(COX.results$s.e.m.)
+COX.results$HR <- as.numeric(COX.results$HR)
+COX.results$low95CI <- as.numeric(COX.results$low95CI)
+COX.results$up95CI <- as.numeric(COX.results$up95CI)
+COX.results$`Z-value` <- as.numeric(COX.results$`Z-value`)
+COX.results$`P-value` <- as.numeric(COX.results$`P-value`)
+COX.results$SampleSize <- as.numeric(COX.results$SampleSize)
+COX.results$N_events <- as.numeric(COX.results$N_events)
+
+AEDB.CEA.COX.results <- COX.results
+
+# Save the data
+cat("- Writing results to Excel-file...\n")
+head.style <- createStyle(textDecoration = "BOLD")
+write.xlsx(AEDB.CEA.COX.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Cox.2G.MODEL4.30days.xlsx"),
+           creator = "Sander W. van der Laan",
+           sheetName = "Results", headerStyle = head.style,
+           row.names = FALSE, col.names = TRUE, overwrite = TRUE)
+
+# Removing intermediates
+cat("- Removing intermediate files...\n")
+rm(TEMP.DF, protein, fit, cox, coxplot, COX.results, COX.results.TEMP, head.style, AEDB.CEA.COX.results)
+
+rm(head.style)
+
+```
+
+
+#### 90-days follow-up
+
+*MODEL 1*
+```{r Cox-regression Analysis: Simple model, 90 days}
+# Set up a dataframe to receive results
+COX.results <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+
+# Looping over each protein/endpoint/time combination
+for (i in 1:length(times90)){
+  eptime = times90[i]
+  ep = endpoints90[i]
+  cat(paste0("* Analyzing the effect of plaque proteins on [",ep,"].\n"))
+  cat(" - creating temporary SE for this work.\n")
+  TEMP.DF = as.data.frame(AEDB.CEA)
+  cat(" - making a 'Surv' object and adding this to temporary dataframe.\n")
+  TEMP.DF$event <- as.integer(TEMP.DF[,ep])
+  TEMP.DF$y <- Surv(time = TEMP.DF[,eptime], event = TEMP.DF$event)
+  cat(" - making strata of each of the plaque proteins and start survival analysis.\n")
+  
+  for (protein in 1:length(TRAITS.PROTEIN.RANK)){
+    cat(paste0("   > processing [",TRAITS.PROTEIN.RANK[protein],"]; ",protein," out of ",length(TRAITS.PROTEIN.RANK)," proteins.\n"))
+    # splitting into two groups
+    TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]] <- cut2(TEMP.DF[,TRAITS.PROTEIN.RANK[protein]], g = 2)
+    cat(paste0("   > cross tabulation of ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    show(table(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]))
+    
+    cat(paste0("\n   > fitting the model for ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    fit <- survfit(as.formula(paste0("y ~ ", TRAITS.PROTEIN.RANK[protein])), data = TEMP.DF)
+    
+    cat(paste0("\n   > make a Kaplan-Meier-shizzle...\n"))
+    # make Kaplan-Meier curve and save it
+    show(ggsurvplot(fit, data = TEMP.DF,
+                    palette = c("#DB003F", "#1290D9"),
+                    # palete = c("F59D10", "#DB003F", "#49A01D", "#1290D9"),
+                    linetype = c(1,2),
+                    ylim = c(0.75, 1),
+                    # linetype = c(1,2,3,4),
+                    # conf.int = FALSE, conf.int.fill = "#595A5C", conf.int.alpha = 0.1,
+                    pval = FALSE, pval.method = FALSE, pval.size = 4,
+                    risk.table = TRUE, risk.table.y.text = FALSE, tables.y.text.col = TRUE, fontsize = 4,
+                    censor = FALSE,
+                    legend = "right",
+                    legend.title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+                    legend.labs = c("low", "high"),
+                    title = paste0("Risk of ",ep,""), xlab = "Time [days]", font.main = c(16, "bold", "black")))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.survival.",ep,".2G.",
+                               TRAITS.PROTEIN.RANK[protein],".90days.pdf"), width = 12, height = 10, onefile = FALSE)
+
+    cat(paste0("\n   > perform the Cox-regression fashizzle and plot it...\n"))
+    ### Do Cox-regression and plot it
+    
+    ### MODEL 1 (Simple model)
+    cox = coxph(Surv(TEMP.DF[,eptime], event) ~ TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]+Age+Gender, data = TEMP.DF)
+    coxplot = coxph(Surv(TEMP.DF[,eptime], event) ~ strata(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]])+Age+Gender, data = TEMP.DF)
+
+    plot(survfit(coxplot), main = paste0("Cox proportional hazard of [",ep,"] per [",eptime,"]."),
+         ylim = c(0.75, 1), xlim = c(0,3), col = c("#595A5C", "#DB003F", "#1290D9"),
+         # ylim = c(0, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         lty = c(1,2), lwd = 2,
+         ylab = "Suvival probability", xlab = "FU time [days]",
+         mark.time = FALSE, axes = FALSE, bty = "n")
+    legend("topright",
+           c("low", "high"),
+           title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+           col = c("#DB003F", "#1290D9"),
+           lty = c(1,2), lwd = 2,
+           bty = "n")
+    axis(side = 1, at = seq(0, 3, by = 1))
+    axis(side = 2, at = seq(0, 1, by = 0.2))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.Cox.",ep,".2G.",
+                               # Today,".AEDB.CEA.Cox.",ep,".4G.",
+                               TRAITS.PROTEIN.RANK[protein],".MODEL1.90days.pdf"), height = 12, width = 10, onefile = TRUE)
+    show(summary(cox))
+
+    cat(paste0("\n   > writing the Cox-regression fashizzle to Excel...\n"))
+
+    COX.results.TEMP <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+    COX.results.TEMP[1,] = COX.STAT(cox, "AEDB.CEA", ep, TRAITS.PROTEIN.RANK[protein])
+    COX.results = rbind(COX.results, COX.results.TEMP)
+
+  }
+}
+
+cat("- Edit the column names...\n")
+colnames(COX.results) = c("Dataset", "Outcome", "CpG",
+                          "Beta", "s.e.m.",
+                          "HR", "low95CI", "up95CI",
+                          "Z-value", "P-value", "SampleSize", "N_events")
+
+cat("- Correct the variable types...\n")
+COX.results$Beta <- as.numeric(COX.results$Beta)
+COX.results$s.e.m. <- as.numeric(COX.results$s.e.m.)
+COX.results$HR <- as.numeric(COX.results$HR)
+COX.results$low95CI <- as.numeric(COX.results$low95CI)
+COX.results$up95CI <- as.numeric(COX.results$up95CI)
+COX.results$`Z-value` <- as.numeric(COX.results$`Z-value`)
+COX.results$`P-value` <- as.numeric(COX.results$`P-value`)
+COX.results$SampleSize <- as.numeric(COX.results$SampleSize)
+COX.results$N_events <- as.numeric(COX.results$N_events)
+
+AEDB.CEA.COX.results <- COX.results
+
+# Save the data
+library(openxlsx)
+cat("- Writing results to Excel-file...\n")
+head.style <- createStyle(textDecoration = "BOLD")
+write.xlsx(AEDB.CEA.COX.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Cox.2G.MODEL1.90days.xlsx"),
+           creator = "Sander W. van der Laan",
+           sheetName = "Results", headerStyle = head.style,
+           row.names = FALSE, col.names = TRUE, overwrite = TRUE)
+
+# Removing intermediates
+cat("- Removing intermediate files...\n")
+#rm(TEMP.DF, protein, fit, cox, coxplot, COX.results, COX.results.TEMP, head.style, AEDB.CEA.COX.results)
+
+#rm(head.style)
+
+```
+
+*MODEL 2*
+```{r Cox-regression Analysis: MODEL 2, 90 days}
+# Set up a dataframe to receive results
+COX.results <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+
+# Looping over each protein/endpoint/time combination
+for (i in 1:length(times90)){
+  eptime = times90[i]
+  ep = endpoints90[i]
+  cat(paste0("* Analyzing the effect of plaque proteins on [",ep,"].\n"))
+  cat(" - creating temporary SE for this work.\n")
+  TEMP.DF = as.data.frame(AEDB.CEA)
+  cat(" - making a 'Surv' object and adding this to temporary dataframe.\n")
+  TEMP.DF$event <- as.integer(TEMP.DF[,ep])
+  #as.integer(TEMP.DF[,ep] == "Excluded")
+
+  TEMP.DF$y <- Surv(time = TEMP.DF[,eptime], event = TEMP.DF$event)
+  cat(" - making strata of each of the plaque proteins and start survival analysis.\n")
+  
+  for (protein in 1:length(TRAITS.PROTEIN.RANK)){
+    cat(paste0("   > processing [",TRAITS.PROTEIN.RANK[protein],"]; ",protein," out of ",length(TRAITS.PROTEIN.RANK)," proteins.\n"))
+    # splitting into two groups
+    TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]] <- cut2(TEMP.DF[,TRAITS.PROTEIN.RANK[protein]], g = 2)
+    cat(paste0("   > cross tabulation of ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    show(table(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]))
+    
+    cat(paste0("\n   > fitting the model for ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    fit <- survfit(as.formula(paste0("y ~ ", TRAITS.PROTEIN.RANK[protein])), data = TEMP.DF)
+    
+    cat(paste0("\n   > make a Kaplan-Meier-shizzle...\n"))
+    # make Kaplan-Meier curve and save it
+    show(ggsurvplot(fit, data = TEMP.DF,
+                    palette = c("#DB003F", "#1290D9"),
+                    # palete = c("F59D10", "#DB003F", "#49A01D", "#1290D9"),
+                    linetype = c(1,2),
+                    ylim = c(0.75, 1),
+                    # linetype = c(1,2,3,4),
+                    # conf.int = FALSE, conf.int.fill = "#595A5C", conf.int.alpha = 0.1,
+                    pval = FALSE, pval.method = FALSE, pval.size = 4,
+                    risk.table = TRUE, risk.table.y.text = FALSE, tables.y.text.col = TRUE, fontsize = 4,
+                    censor = FALSE,
+                    legend = "right",
+                    legend.title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+                    legend.labs = c("low", "high"),
+                    title = paste0("Risk of ",ep,""), xlab = "Time [days]", font.main = c(16, "bold", "black")))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.survival.",ep,".2G.",
+                               TRAITS.PROTEIN.RANK[protein],".90days.pdf"), width = 12, height = 10, onefile = FALSE)
+
+    cat(paste0("\n   > perform the Cox-regression fashizzle and plot it...\n"))
+    ### Do Cox-regression and plot it
+    
+    ### MODEL 2 adjusted for age, sex, hypertension, diabetes, smoking, LDL-C levels, lipid-lowering drugs, antiplatelet drugs, eGFR, BMI, history of CVD, level of stenosis
+    cox = coxph(Surv(TEMP.DF[,eptime], event) ~ TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose, data = TEMP.DF)
+    coxplot = coxph(Surv(TEMP.DF[,eptime], event) ~ strata(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]])+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose, data = TEMP.DF)
+
+  
+    plot(survfit(coxplot), main = paste0("Cox proportional hazard of [",ep,"] per [",eptime,"]."),
+         ylim = c(0.75, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         # ylim = c(0, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         lty = c(1,2), lwd = 2,
+         ylab = "Suvival probability", xlab = "FU time [days]",
+         mark.time = FALSE, axes = FALSE, bty = "n")
+    legend("topright",
+           c("low", "high"),
+           title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+           col = c("#DB003F", "#1290D9"),
+           lty = c(1,2), lwd = 2,
+           bty = "n")
+    axis(side = 1, at = seq(0, 3, by = 1))
+    axis(side = 2, at = seq(0, 1, by = 0.2))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.Cox.",ep,".2G.",
+                               # Today,".AEDB.CEA.Cox.",ep,".4G.",
+                               TRAITS.PROTEIN.RANK[protein],".MODEL2.90days.pdf"), height = 12, width = 10, onefile = TRUE)
+
+    show(summary(cox))
+
+    cat(paste0("\n   > writing the Cox-regression fashizzle to Excel...\n"))
+
+    COX.results.TEMP <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+    COX.results.TEMP[1,] = COX.STAT(cox, "AEDB.CEA", ep, TRAITS.PROTEIN.RANK[protein])
+    COX.results = rbind(COX.results, COX.results.TEMP)
+
+  }
+}
+
+cat("- Edit the column names...\n")
+colnames(COX.results) = c("Dataset", "Outcome", "CpG",
+                          "Beta", "s.e.m.",
+                          "HR", "low95CI", "up95CI",
+                          "Z-value", "P-value", "SampleSize", "N_events")
+
+cat("- Correct the variable types...\n")
+COX.results$Beta <- as.numeric(COX.results$Beta)
+COX.results$s.e.m. <- as.numeric(COX.results$s.e.m.)
+COX.results$HR <- as.numeric(COX.results$HR)
+COX.results$low95CI <- as.numeric(COX.results$low95CI)
+COX.results$up95CI <- as.numeric(COX.results$up95CI)
+COX.results$`Z-value` <- as.numeric(COX.results$`Z-value`)
+COX.results$`P-value` <- as.numeric(COX.results$`P-value`)
+COX.results$SampleSize <- as.numeric(COX.results$SampleSize)
+COX.results$N_events <- as.numeric(COX.results$N_events)
+
+AEDB.CEA.COX.results <- COX.results
+
+# Save the data
+cat("- Writing results to Excel-file...\n")
+head.style <- createStyle(textDecoration = "BOLD")
+write.xlsx(AEDB.CEA.COX.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Cox.2G.MODEL2.90days.xlsx"),
+           creator = "Sander W. van der Laan",
+           sheetName = "Results", headerStyle = head.style,
+           row.names = FALSE, col.names = TRUE, overwrite = TRUE)
+
+# Removing intermediates
+cat("- Removing intermediate files...\n")
+rm(TEMP.DF, protein, fit, cox, coxplot, COX.results, COX.results.TEMP, head.style, AEDB.CEA.COX.results)
+
+rm(head.style)
+
+```
+
+*MODEL 3*
+
+> Note that here we have very few events for `IL6_pg_ug_2015_rank`, and therefore created a new list of proteins to test _without_ this protein. This has likely to do with missing data in the risk factors/confounders included in the model. 
+
+```{r Cox-regression Analysis: MODEL 3, 90 days}
+# Set up a dataframe to receive results
+TRAITS.PROTEIN.RANK.model3 = c("IL6_rank", "MCP1_rank", "IL6R_pg_ug_2015_rank", "MCP1_pg_ug_2015_rank")
+COX.results <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+
+# Looping over each protein/endpoint/time combination
+for (i in 1:length(times90)){
+  eptime = times90[i]
+  ep = endpoints90[i]
+  cat(paste0("* Analyzing the effect of plaque proteins on [",ep,"].\n"))
+  cat(" - creating temporary SE for this work.\n")
+  TEMP.DF = as.data.frame(AEDB.CEA)
+  cat(" - making a 'Surv' object and adding this to temporary dataframe.\n")
+  TEMP.DF$event <- as.integer(TEMP.DF[,ep])
+  #as.integer(TEMP.DF[,ep] == "Excluded")
+
+  TEMP.DF$y <- Surv(time = TEMP.DF[,eptime], event = TEMP.DF$event)
+  cat(" - making strata of each of the plaque proteins and start survival analysis.\n")
+  
+  for (protein in 1:length(TRAITS.PROTEIN.RANK.model3)){
+    cat(paste0("   > processing [",TRAITS.PROTEIN.RANK.model3[protein],"]; ",protein," out of ",length(TRAITS.PROTEIN.RANK.model3)," proteins.\n"))
+    # splitting into two groups
+    TEMP.DF[[ TRAITS.PROTEIN.RANK.model3[protein] ]] <- cut2(TEMP.DF[,TRAITS.PROTEIN.RANK.model3[protein]], g = 2)
+    cat(paste0("   > cross tabulation of ",TRAITS.PROTEIN.RANK.model3[protein],"-stratum.\n"))
+    show(table(TEMP.DF[[ TRAITS.PROTEIN.RANK.model3[protein] ]]))
+    
+    cat(paste0("\n   > fitting the model for ",TRAITS.PROTEIN.RANK.model3[protein],"-stratum.\n"))
+    fit <- survfit(as.formula(paste0("y ~ ", TRAITS.PROTEIN.RANK.model3[protein])), data = TEMP.DF)
+    
+    cat(paste0("\n   > make a Kaplan-Meier-shizzle...\n"))
+    # make Kaplan-Meier curve and save it
+    show(ggsurvplot(fit, data = TEMP.DF,
+                    palette = c("#DB003F", "#1290D9"),
+                    # palete = c("F59D10", "#DB003F", "#49A01D", "#1290D9"),
+                    linetype = c(1,2),
+                    ylim = c(0.75,1),
+                    # linetype = c(1,2,3,4),
+                    # conf.int = FALSE, conf.int.fill = "#595A5C", conf.int.alpha = 0.1,
+                    pval = FALSE, pval.method = FALSE, pval.size = 4,
+                    risk.table = TRUE, risk.table.y.text = FALSE, tables.y.text.col = TRUE, fontsize = 4,
+                    censor = FALSE,
+                    legend = "right",
+                    legend.title = paste0("",TRAITS.PROTEIN.RANK.model3[protein],""),
+                    legend.labs = c("low", "high"),
+                    title = paste0("Risk of ",ep,""), xlab = "Time [days]", font.main = c(16, "bold", "black")))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.survival.",ep,".2G.",
+                               TRAITS.PROTEIN.RANK.model3[protein],".90days.pdf"), width = 12, height = 10, onefile = FALSE)
+
+    cat(paste0("\n   > perform the Cox-regression fashizzle and plot it...\n"))
+    ### Do Cox-regression and plot it
+    
+    ### MODEL 3 same to model 2, with additional adjustments for circulating CRP levels
+    cox = coxph(Surv(TEMP.DF[,eptime], event) ~ TEMP.DF[[ TRAITS.PROTEIN.RANK.model3[protein] ]]+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose + hsCRP_plasma, data = TEMP.DF)
+    coxplot = coxph(Surv(TEMP.DF[,eptime], event) ~ strata(TEMP.DF[[ TRAITS.PROTEIN.RANK.model3[protein] ]])+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent +  Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose + hsCRP_plasma, data = TEMP.DF)
+
+  
+    plot(survfit(coxplot), main = paste0("Cox proportional hazard of [",ep,"] per [",eptime,"]."),
+         ylim = c(0.75, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         # ylim = c(0, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         lty = c(1,2), lwd = 2,
+         ylab = "Suvival probability", xlab = "FU time [days]",
+         mark.time = FALSE, axes = FALSE, bty = "n")
+    legend("topright",
+           c("low", "high"),
+           title = paste0("",TRAITS.PROTEIN.RANK.model3[protein],""),
+           col = c("#DB003F", "#1290D9"),
+           lty = c(1,2), lwd = 2,
+           bty = "n")
+    axis(side = 1, at = seq(0, 3, by = 1))
+    axis(side = 2, at = seq(0, 1, by = 0.2))
+
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.Cox.",ep,".2G.",
+                               # Today,".AEDB.CEA.Cox.",ep,".4G.",
+                               TRAITS.PROTEIN.RANK.model3[protein],".MODEL3.90days.pdf"), height = 12, width = 10, onefile = TRUE)
+
+    show(summary(cox))
+
+    cat(paste0("\n   > writing the Cox-regression fashizzle to Excel...\n"))
+
+    COX.results.TEMP <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+    COX.results.TEMP[1,] = COX.STAT(cox, "AEDB.CEA", ep, TRAITS.PROTEIN.RANK.model3[protein])
+    COX.results = rbind(COX.results, COX.results.TEMP)
+
+  }
+}
+
+cat("- Edit the column names...\n")
+colnames(COX.results) = c("Dataset", "Outcome", "CpG",
+                          "Beta", "s.e.m.",
+                          "HR", "low95CI", "up95CI",
+                          "Z-value", "P-value", "SampleSize", "N_events")
+
+cat("- Correct the variable types...\n")
+COX.results$Beta <- as.numeric(COX.results$Beta)
+COX.results$s.e.m. <- as.numeric(COX.results$s.e.m.)
+COX.results$HR <- as.numeric(COX.results$HR)
+COX.results$low95CI <- as.numeric(COX.results$low95CI)
+COX.results$up95CI <- as.numeric(COX.results$up95CI)
+COX.results$`Z-value` <- as.numeric(COX.results$`Z-value`)
+COX.results$`P-value` <- as.numeric(COX.results$`P-value`)
+COX.results$SampleSize <- as.numeric(COX.results$SampleSize)
+COX.results$N_events <- as.numeric(COX.results$N_events)
+
+AEDB.CEA.COX.results <- COX.results
+
+# Save the data
+cat("- Writing results to Excel-file...\n")
+head.style <- createStyle(textDecoration = "BOLD")
+write.xlsx(AEDB.CEA.COX.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Cox.2G.MODEL3.90days.xlsx"),
+           creator = "Sander W. van der Laan",
+           sheetName = "Results", headerStyle = head.style,
+           row.names = FALSE, col.names = TRUE, overwrite = TRUE)
+
+# Removing intermediates
+cat("- Removing intermediate files...\n")
+rm(TEMP.DF, protein, fit, cox, coxplot, COX.results, COX.results.TEMP, head.style, AEDB.CEA.COX.results)
+
+rm(head.style)
+
+```
+
+*MODEL 4*
+```{r Cox-regression Analysis: MODEL 4, 90 days}
+# Set up a dataframe to receive results
+COX.results <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+
+# Looping over each protein/endpoint/time combination
+for (i in 1:length(times90)){
+  eptime = times90[i]
+  ep = endpoints90[i]
+  cat(paste0("* Analyzing the effect of plaque proteins on [",ep,"].\n"))
+  cat(" - creating temporary SE for this work.\n")
+  TEMP.DF = as.data.frame(AEDB.CEA)
+  cat(" - making a 'Surv' object and adding this to temporary dataframe.\n")
+  TEMP.DF$event <- as.integer(TEMP.DF[,ep])
+  #as.integer(TEMP.DF[,ep] == "Excluded")
+
+  TEMP.DF$y <- Surv(time = TEMP.DF[,eptime], event = TEMP.DF$event)
+  cat(" - making strata of each of the plaque proteins and start survival analysis.\n")
+  
+  for (protein in 1:length(TRAITS.PROTEIN.RANK)){
+    cat(paste0("   > processing [",TRAITS.PROTEIN.RANK[protein],"]; ",protein," out of ",length(TRAITS.PROTEIN.RANK)," proteins.\n"))
+    # splitting into two groups
+    TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]] <- cut2(TEMP.DF[,TRAITS.PROTEIN.RANK[protein]], g = 2)
+    cat(paste0("   > cross tabulation of ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    show(table(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]))
+    
+    cat(paste0("\n   > fitting the model for ",TRAITS.PROTEIN.RANK[protein],"-stratum.\n"))
+    fit <- survfit(as.formula(paste0("y ~ ", TRAITS.PROTEIN.RANK[protein])), data = TEMP.DF)
+    
+    cat(paste0("\n   > make a Kaplan-Meier-shizzle...\n"))
+    # make Kaplan-Meier curve and save it
+    show(ggsurvplot(fit, data = TEMP.DF,
+                    palette = c("#DB003F", "#1290D9"),
+                    # palete = c("F59D10", "#DB003F", "#49A01D", "#1290D9"),
+                    linetype = c(1,2),
+                    ylim = c(0.75, 1),
+                    # linetype = c(1,2,3,4),
+                    # conf.int = FALSE, conf.int.fill = "#595A5C", conf.int.alpha = 0.1,
+                    pval = FALSE, pval.method = FALSE, pval.size = 4,
+                    risk.table = TRUE, risk.table.y.text = FALSE, tables.y.text.col = TRUE, fontsize = 4,
+                    censor = FALSE,
+                    legend = "right",
+                    legend.title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+                    legend.labs = c("low", "high"),
+                    title = paste0("Risk of ",ep,""), xlab = "Time [days]", font.main = c(16, "bold", "black")))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.survival.",ep,".2G.",
+                               TRAITS.PROTEIN.RANK[protein],"90days.pdf"), width = 12, height = 10, onefile = FALSE)
+
+    cat(paste0("\n   > perform the Cox-regression fashizzle and plot it...\n"))
+    ### Do Cox-regression and plot it
+    
+    ### MODEL 4 same to model 2 with additional adjustment for IL6 levels in the plaque
+    cox = coxph(Surv(TEMP.DF[,eptime], event) ~ TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]]+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose + IL6_pg_ug_2015_rank, data = TEMP.DF)
+    coxplot = coxph(Surv(TEMP.DF[,eptime], event) ~ strata(TEMP.DF[[ TRAITS.PROTEIN.RANK[protein] ]])+Age + Gender + Hypertension.composite + DiabetesStatus + SmokerCurrent + Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + CAD_history + Stroke_history + Peripheral.interv + stenose + IL6_pg_ug_2015_rank, data = TEMP.DF)
+  
+    plot(survfit(coxplot), main = paste0("Cox proportional hazard of [",ep,"] per [",eptime,"]."),
+         ylim = c(0.75, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         # ylim = c(0, 1), xlim = c(0,3), col = c("#DB003F", "#1290D9"),
+         lty = c(1,2), lwd = 2,
+         ylab = "Suvival probability", xlab = "FU time [days]",
+         mark.time = FALSE, axes = FALSE, bty = "n")
+    legend("topright",
+           c("low", "high"),
+           title = paste0("",TRAITS.PROTEIN.RANK[protein],""),
+           col = c("#DB003F", "#1290D9"),
+           lty = c(1,2), lwd = 2,
+           bty = "n")
+    axis(side = 1, at = seq(0, 3, by = 1))
+    axis(side = 2, at = seq(0, 1, by = 0.2))
+    dev.copy2pdf(file = paste0(COX_loc,"/",
+                               Today,".AEDB.CEA.Cox.",ep,".2G.",
+                               # Today,".AEDB.CEA.Cox.",ep,".4G.",
+                               TRAITS.PROTEIN.RANK[protein],".MODEL4.90days.pdf"), height = 12, width = 10, onefile = TRUE)
+    show(summary(cox))
+
+    cat(paste0("\n   > writing the Cox-regression fashizzle to Excel...\n"))
+
+    COX.results.TEMP <- data.frame(matrix(NA, ncol = 12, nrow = 0))
+    COX.results.TEMP[1,] = COX.STAT(cox, "AEDB.CEA", ep, TRAITS.PROTEIN.RANK[protein])
+    COX.results = rbind(COX.results, COX.results.TEMP)
+
+  }
+}
+
+cat("- Edit the column names...\n")
+colnames(COX.results) = c("Dataset", "Outcome", "CpG",
+                          "Beta", "s.e.m.",
+                          "HR", "low95CI", "up95CI",
+                          "Z-value", "P-value", "SampleSize", "N_events")
+
+cat("- Correct the variable types...\n")
+COX.results$Beta <- as.numeric(COX.results$Beta)
+COX.results$s.e.m. <- as.numeric(COX.results$s.e.m.)
+COX.results$HR <- as.numeric(COX.results$HR)
+COX.results$low95CI <- as.numeric(COX.results$low95CI)
+COX.results$up95CI <- as.numeric(COX.results$up95CI)
+COX.results$`Z-value` <- as.numeric(COX.results$`Z-value`)
+COX.results$`P-value` <- as.numeric(COX.results$`P-value`)
+COX.results$SampleSize <- as.numeric(COX.results$SampleSize)
+COX.results$N_events <- as.numeric(COX.results$N_events)
+
+AEDB.CEA.COX.results <- COX.results
+
+# Save the data
+cat("- Writing results to Excel-file...\n")
+head.style <- createStyle(textDecoration = "BOLD")
+write.xlsx(AEDB.CEA.COX.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Cox.2G.MODEL4.90days.xlsx"),
+           creator = "Sander W. van der Laan",
+           sheetName = "Results", headerStyle = head.style,
+           row.names = FALSE, col.names = TRUE, overwrite = TRUE)
+
+# Removing intermediates
+cat("- Removing intermediate files...\n")
+rm(TEMP.DF, protein, fit, cox, coxplot, COX.results, COX.results.TEMP, head.style, AEDB.CEA.COX.results)
+
+rm(head.style)
+
+```
 
 
 # Correlations
@@ -4696,10 +5937,20 @@ ggpairs(AEDB.CEA,
 ------
 
     Version:      v1.0.5
-    Last update:  2020-03-05
+    Last update:  2020-05-28
     Written by:   Sander W. van der Laan (s.w.vanderlaan-2[at]umcutrecht.nl).
     Description:  Script to select samples from the Ather-Express Biobank Study.
     Minimum requirements: R version 3.5.2 (2018-12-20) -- 'Eggshell Igloo', macOS Mojave (10.14.2).
+    
+    
+    Changes log
+    * v1.0.5 Update with 30- and 90-days survival.
+    * v1.0.4 Updated with Cox-regressions.
+    * v1.0.3 Included more models.
+    * v1.0.2 Bugs fixed.
+    * v1.0.1 Extended with linear and logistic regressions
+    * v1.0.0 Inital version
+    
 
 ------
 
