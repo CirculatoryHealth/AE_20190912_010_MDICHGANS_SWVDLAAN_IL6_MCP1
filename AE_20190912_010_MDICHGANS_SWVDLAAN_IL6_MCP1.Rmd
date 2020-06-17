@@ -5931,6 +5931,11 @@ ggpairs(AEDB.CEA,
         progress = FALSE) 
 ```
 
+# Additional figures
+
+Here we will make some additional figures for the manuscript. 
+
+
 
 # Session information
 
