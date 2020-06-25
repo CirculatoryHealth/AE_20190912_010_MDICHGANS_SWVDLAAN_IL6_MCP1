@@ -352,15 +352,24 @@ Against this background we now aim to make use of the data from Athero-Express B
 
 *Blood*
 
-- IL6: Interleukin 6. Entrez Gene: 3569. Bender MedSystems; cat.nr.: BMS810FF. Recalculated FACS. [pg/mL]
-- MCP1: Monocyte chemotactic protein 1, MCP-1 (Chemokine (C-C motif) ligand 2, CCL2). Entrez Gene: 6347. Measured at the WKZ. Recalculated Luminex. [pg/mL]
+OLINK-platform 
 
+- IL6: Interleukin 6. Entrez Gene: 3569. OLINK, plasma <!-- Bender MedSystems; cat.nr.: BMS810FF. Recalculated FACS. [pg/mL] -->
+- MCP1: Monocyte chemotactic protein 1, MCP-1 (Chemokine (C-C motif) ligand 2, CCL2). Entrez Gene: 6347. OLINK, plasma <!-- Measured at the WKZ. Recalculated Luminex. [pg/mL] -->
+
+> THESE DATA ARE NOT AVAILABLE YET
 
 *Plaque*
 
-- IL6: Interleuking 6 (IL6; Entrez Gene: 3569) concentration in plaque [pg/ug], measured by Luminex at the WKZ.
-- MCP1: Monocyte chemotactic protein 1 (a.k.a. CCL2; Entrez Gene: 6347) concentration in plaque [pg/ug], measured by Luminex at the WKZ.
-- IL6R: Interleuking 6 receptor (IL6R; Entrez Gene: 3570) concentration in plaque [pg/ug], measured by Luminex at the WKZ.
+Luminex-platform, measured by Luminex
+
+- MCP1: Monocyte chemotactic protein 1 (a.k.a. CCL2; Entrez Gene: 6347) concentration in plaque [pg/ug]. Measured in two experiments, variables `MCP1` and `MCP1_pg_ug_2015`. We consider the latter the best possible measurement as this was corrected for plaque total protein concentration.
+- IL6: Interleuking 6 (IL6; Entrez Gene: 3569) concentration in plaque [pg/ug].
+- IL6R: Interleuking 6 receptor (IL6R; Entrez Gene: 3570) concentration in plaque [pg/ug].
+
+FACS platform
+
+- IL6: Interleukin 6. Entrez Gene: 3569. Bender MedSystems; cat.nr.: BMS810FF. Recalculated FACS. [pg/mL]
 
 
 # Loading data
@@ -731,8 +740,8 @@ We are interested in the following variables at baseline.
   - TIA
   - Stroke
 - eGFR (mL/min/1.73 m²)
-- MCP-1 plaque levels (pg/mL)
-- MCP-1 serum levels (pg/mL)
+- MCP-1 plaque levels (pg/mL) (LUMINEX based, two experiments `MCP1`, and `MCP1_pg_ug_2015`)
+- MCP-1 serum levels (pg/mL) (OLINK based)
 
 
 ```{r Baseline AEDB: creation, include = FALSE}
@@ -837,12 +846,13 @@ AEDB$neutrophils <- as.numeric(AEDB$neutrophils)
 AEDB$Mast_cells_plaque <- as.numeric(AEDB$Mast_cells_plaque)
 AEDB$vessel_density_averaged <- as.numeric(AEDB$vessel_density_averaged)
 
-AEDB$IL6 <- as.numeric(AEDB$IL6)
-AEDB$IL6_pg_ug_2015 <- as.numeric(AEDB$IL6_pg_ug_2015)
-AEDB$IL6R_pg_ug_2015 <- as.numeric(AEDB$IL6R_pg_ug_2015)
-AEDB$MCP1 <- as.numeric(AEDB$MCP1)
-AEDB$MCP1_pg_ug_2015 <- as.numeric(AEDB$MCP1_pg_ug_2015)
-AEDB$hsCRP_plasma <- as.numeric(AEDB$hsCRP_plasma)
+# IL6, IL6R, MCP1 measurements
+AEDB$IL6 <- as.numeric(AEDB$IL6) # FACS plaque
+AEDB$IL6_pg_ug_2015 <- as.numeric(AEDB$IL6_pg_ug_2015) # LUMINEX plaque
+AEDB$IL6R_pg_ug_2015 <- as.numeric(AEDB$IL6R_pg_ug_2015) # LUMINEX plaque
+AEDB$MCP1 <- as.numeric(AEDB$MCP1) # LUMINEX plaque
+AEDB$MCP1_pg_ug_2015 <- as.numeric(AEDB$MCP1_pg_ug_2015) # LUMINEX plaque
+AEDB$hsCRP_plasma <- as.numeric(AEDB$hsCRP_plasma) # LUMINEX
 
 require(labelled)
 AEDB$ORyear <- to_factor(AEDB$ORyear)
@@ -969,6 +979,7 @@ basetable_con = basetable_vars[!basetable_vars %in% basetable_bin]
 # basetable_con
 ```
 
+### All patients
 Showing the baseline table of the whole Athero-Express Biobank.
 
 ```{r Baseline AEDB: Visualize AEDB}
@@ -984,6 +995,9 @@ AEDB.tableOne = print(CreateTableOne(vars = basetable_vars,
                           contDigits = 3)[,1:3]
 ```
 
+### CEA patients
+
+Showing the baseline table of the CEA patients in the Athero-Express Biobank.
 
 ```{r Baseline AEDB: Visualize AEDB CEA}
 # Create baseline tables
@@ -998,6 +1012,10 @@ AEDB.CEA.tableOne = print(CreateTableOne(vars = basetable_vars,
                           contDigits = 3)[,1:3]
 ```
 
+### CEA patients with `MCP1_pg_ug_2015`
+
+Showing the baseline table of the CEA patients in the Athero-Express Biobank with `MCP1_pg_ug_2015`.
+
 ```{r Baseline AEDB: Visualize subsetCEA}
 AEDB.CEA.subset <- subset(AEDB.CEA, !is.na(MCP1_pg_ug_2015))
 
@@ -1010,6 +1028,10 @@ AEDB.CEA.subset.AsymptSympt.tableOne = print(CreateTableOne(vars = basetable_var
                           format = "pf", 
                           contDigits = 3)[,1:6]
 ```
+
+### CEA patients with `MCP1_pg_ug_2015` and `MCP1`
+
+Showing the baseline table of the CEA patients in the Athero-Express Biobank with `MCP1_pg_ug_2015` _and_ `MCP1`.
 
 ```{r Baseline AEDB: Visualize subsetCEA with MCP1}
 
@@ -1025,8 +1047,14 @@ AEDB.CEA.subset.combo.tableOne = print(CreateTableOne(vars = basetable_vars,
                           contDigits = 3)[,1:6]
 ```
 
+### CEA patients with plasma MCP1 levels
+
+Showing the baseline table of the CEA patients in the Athero-Express Biobank with plasma MCP1 levels.
+
+> NOT AVAILABLE YET
+
 ```{r Baseline AEDB: Visualize subsetCEA with serum MCP1}
-AEDB.CEA.subset.serum <- subset(AEDB.CEA, !is.na(MCP1))
+AEDB.CEA.subset.serum <- subset(AEDB.CEA, !is.na(MCP1_plasma))
 
 AEDB.CEA.subset.serum.tableOne = print(CreateTableOne(vars = basetable_vars, 
                                          # factorVars = basetable_bin,
@@ -1037,6 +1065,13 @@ AEDB.CEA.subset.serum.tableOne = print(CreateTableOne(vars = basetable_vars,
                           format = "pf", 
                           contDigits = 3)[,1:6]
 ```
+
+
+### CEA patients with plasma _and_ plaque MCP1 levels
+
+Showing the baseline table of the CEA patients in the Athero-Express Biobank with both plasma and plaque MCP1 levels.
+
+> NOT AVAILABLE YET
 
 ```{r Baseline AEDB: Visualize subsetCEA with serum MCP1 and plaque MCP1}
 AEDB.CEA.subset.both <- subset(AEDB.CEA, !is.na(MCP1_pg_ug_2015) & !is.na(MCP1))
@@ -1074,11 +1109,11 @@ write.xlsx(file = paste0(BASELINE_loc, "/",Today,".",PROJECTNAME,".AE.BaselineTa
            col.names = TRUE,
            sheetName = "subsetAEDB_Baseline")
 
-write.xlsx(file = paste0(BASELINE_loc, "/",Today,".",PROJECTNAME,".AE.BaselineTable.subsetCEAserum.AsymptSympt.xlsx"),
-           AEDB.CEA.subset.serum.tableOne, 
-           row.names = TRUE, 
-           col.names = TRUE, 
-           sheetName = "subsetAEDB_Baseline_serum_Sympt")
+# write.xlsx(file = paste0(BASELINE_loc, "/",Today,".",PROJECTNAME,".AE.BaselineTable.subsetCEAserum.AsymptSympt.xlsx"),
+#            AEDB.CEA.subset.serum.tableOne, 
+#            row.names = TRUE, 
+#            col.names = TRUE, 
+#            sheetName = "subsetAEDB_Baseline_serum_Sympt")
 
 ```
 
@@ -1087,6 +1122,9 @@ write.xlsx(file = paste0(BASELINE_loc, "/",Today,".",PROJECTNAME,".AE.BaselineTa
 
 Here we inspect the data and when necessary transform quantitative measures. We will inspect the raw, natural log transformed + the smallest measurement, and inverse-normal transformation. 
 
+### MCP1 plaque levels 
+
+We will explore the plaque levels. As noted above, we will use `MCP1_pg_ug_2015`.
 
 ```{r DataExploration: MCP1 plaque}
 
@@ -1147,6 +1185,10 @@ p3
 rm(p1, p2, p3)
 ```
 
+
+### MCP1 serum levels 
+
+> NOT AVAILABLE YET
 
 ```{r DataExploration: MCP1 serum}
 
@@ -1493,7 +1535,8 @@ In this section we make some variables to assist with analysis.
 AEDB.CEA.samplesize = nrow(AEDB.CEA)
 # TRAITS.PROTEIN = c("IL6_LN", "MCP1_LN", "IL6_pg_ug_2015_LN", "IL6R_pg_ug_2015_LN", "MCP1_pg_ug_2015_LN")
 # TRAITS.PROTEIN.RANK = c("IL6_rank", "MCP1_rank", "IL6_pg_ug_2015_rank", "IL6R_pg_ug_2015_rank", "MCP1_pg_ug_2015_rank")
-TRAITS.PROTEIN.RANK = c("MCP1_pg_ug_2015_rank", "MCP1_rank")
+# TRAITS.PROTEIN.RANK = c("MCP1_pg_ug_2015_rank", "MCP1_rank")
+TRAITS.PROTEIN.RANK = c("MCP1_pg_ug_2015_rank")
 
 # TRAITS.CON = c("Macrophages_LN", "SMC_LN", "VesselDensity_LN") 
 TRAITS.CON.RANK = c("Macrophages_rank", "SMC_rank", "VesselDensity_rank")
@@ -1562,9 +1605,9 @@ COVARIATES_M2 = c(COVARIATES_M1,
 
 In this model we correct for _Age_ and _Gender_.
 
-#### Inverse-rank normalization
-
 Here we use the inverse-rank normalized data - visually this is more normally distributed.
+
+#### Quantitative plaque traits
 
 Analysis of continuous/quantitative plaque traits as a function of serum/plaque MCP1 levels.
 ```{r CrossSec: plaques - linear regression MODEL1 RANK, include=TRUE, paged.print=TRUE}
@@ -1629,6 +1672,8 @@ rm(TRAIT, trait, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
 
 
 ```
+
+#### Binary plaque traits
 
 Analysis of binary plaque traits as a function of serum/plaque MCP1 levels.
 ```{r CrossSec: plaques - logistic regression MODEL1 RANK, include=TRUE, paged.print=TRUE}
@@ -1701,10 +1746,9 @@ rm(TRAIT, trait, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
 
 In this model we correct for _Age_, _Gender_, _Hypertension status_, _Diabetes status_, _current smoker status_, _lipid-lowering drugs (LLDs)_, _antiplatelet medication_, _eGFR (MDRD)_, _BMI_, _MedHx_CVD_ (combination of _CAD history_, _stroke history_, and _peripheral interventions_), and _stenosis_.
 
-
-#### Inverse-rank normalization
-
 Here we use the inverse-rank normalized data - visually this is more normally distributed.
+
+#### Quantitative plaque traits
 
 Analysis of continuous/quantitative plaque traits as a function of serum/plaque MCP1 levels.
 ```{r CrossSec: plaques - linear regression MODEL2 RANK, include=TRUE, paged.print=TRUE}
@@ -1773,6 +1817,8 @@ rm(TRAIT, trait, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
 
 
 ```
+
+#### Binary plaque traits
 
 Analysis of binary plaque traits as a function of serum/plaque MCP1 levels.
 ```{r CrossSec: plaques - logistic regression MODEL2 RANK, include=TRUE, paged.print=TRUE}
@@ -1844,7 +1890,6 @@ rm(TRAIT, trait, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
 ```
 
 
-
 ## B. Cross-sectional analysis symptoms
 
 We will perform a cross-sectional analysis between plaque and serum MCP1, IL6, and IL6R levels and the 'clinical status' of the plaque in terms of presence of patients' symptoms (symptomatic vs. asymptomatic). The symptoms of interest are:
@@ -1859,10 +1904,9 @@ We will perform a cross-sectional analysis between plaque and serum MCP1, IL6, a
 
 In this model we correct for _Age_, and _Gender_.
 
-
-#### Inverse-rank normalization
-
 Here we use the inverse-rank normalized data - visually this is more normally distributed.
+
+#### Quantitative plaque traits
 
 ```{r CrossSec: symptoms - logistic regression MODEL1 RANK, include=TRUE, paged.print=TRUE}
 
@@ -1934,10 +1978,10 @@ rm(TRAIT, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
 
 In this model we correct for _Age_, _Gender_, _Hypertension status_, _Diabetes status_, _current smoker status_, _lipid-lowering drugs (LLDs)_, _antiplatelet medication_, _eGFR (MDRD)_, _BMI_, _MedHx_CVD_ (combination of _CAD history_, _stroke history_, and _peripheral interventions_), and _stenosis._.
 
-
-#### Inverse-rank normalization
-
 Here we use the inverse-rank normalized data - visually this is more normally distributed.
+
+#### Binary plaque traits
+
 
 ```{r CrossSec: symptoms - logistic regression MODEL2 RANK, include=TRUE, paged.print=TRUE}
 
@@ -3148,10 +3192,15 @@ library(ggcorrplot)
 #                           select = c("IL6_rank", "MCP1_rank", "IL6_pg_ug_2015_rank", "MCP1_pg_ug_2015_rank", "IL6R_pg_ug_2015_rank",
 #                                                TRAITS.BIN, TRAITS.CON.RANK)
 #                                     )
+# AEDB.CEA.temp <- subset(AEDB.CEA, 
+#                           select = c("MCP1_rank", "MCP1_pg_ug_2015_rank",
+#                                                TRAITS.BIN, TRAITS.CON.RANK)
+#                                     )
 AEDB.CEA.temp <- subset(AEDB.CEA, 
-                          select = c("MCP1_rank", "MCP1_pg_ug_2015_rank",
+                          select = c("MCP1_pg_ug_2015_rank",
                                                TRAITS.BIN, TRAITS.CON.RANK)
                                     )
+
 
 AEDB.CEA.temp$CalcificationPlaque <- as.numeric(AEDB.CEA.temp$CalcificationPlaque)
 AEDB.CEA.temp$CollagenPlaque <- as.numeric(AEDB.CEA.temp$CollagenPlaque)
@@ -3263,13 +3312,23 @@ install.packages.auto("GGally")
 library(GGally)
  
 # From the help page:
-ggpairs(AEDB.CEA, 
-        columns = c("MCP1_rank", "MCP1_pg_ug_2015_rank", TRAITS.BIN, TRAITS.CON.RANK), 
-        columnLabels = c("MCP1 (serum)", "MCP1", 
+
+# ggpairs(AEDB.CEA, 
+#         columns = c("MCP1_rank", "MCP1_pg_ug_2015_rank", TRAITS.BIN, TRAITS.CON.RANK), 
+#         columnLabels = c("MCP1 (serum)", "MCP1", 
+#                          "Calcification", "Collagen", "Fat 10%", "IPH", "Macrophages", "SMC", "Vessel density"),
+#         method = c("spearman"),
+#         # ggplot2::aes(colour = Gender),
+#         progress = FALSE) 
+
+ggpairs(AEDB.CEA,
+        columns = c("MCP1_pg_ug_2015_rank", TRAITS.BIN, TRAITS.CON.RANK),
+        columnLabels = c("MCP1",
                          "Calcification", "Collagen", "Fat 10%", "IPH", "Macrophages", "SMC", "Vessel density"),
         method = c("spearman"),
         # ggplot2::aes(colour = Gender),
-        progress = FALSE) 
+        progress = FALSE)
+
 ```
 
 ## Circulating MCP1
@@ -3280,6 +3339,8 @@ Finally, we explored in a sub-sample, where circulating MCP-1 levels are availab
 2. Associations of circulating MCP-1 levels with plaque vulnerability characteristics
 3. Associations of circulating MCP-1 levels with the status of the plaque in terms of presence of symptoms (symptomatic vs. asymptomatic)
 4. Associations of circulating MCP-1 levels with the primary composite endpoint of secondary cardiovascular events.
+
+> NOT AVAILABLE YET
 
 ```{r MCP1 Serum Correlations}
 
@@ -3437,12 +3498,13 @@ We want to create per-age-group figures.
 ```{r AgeGroups}
 library(dplyr)
 
-AEDB.CEA <- AEDB.CEA %>% mutate(AgeGroup = case_when(Age < 55 ~ "<55",
+AEDB.CEA <- AEDB.CEA %>% mutate(AgeGroup = factor(case_when(Age < 55 ~ "<55",
                                                      Age >= 55  & Age <= 64 ~ "55-64",
                                                      Age >= 65  & Age <= 74 ~ "65-74",
                                                      Age >= 75  & Age <= 84 ~ "75-84",
-                                                     Age >= 85 ~ "85+"))
-AEDB.CEA <- AEDB.CEA %>% mutate(AgeGroupSex = case_when(Age < 55 & Gender == "male" ~ "<55 males" ,
+                                                     Age >= 85 ~ "85+"))) 
+
+AEDB.CEA <- AEDB.CEA %>% mutate(AgeGroupSex = factor(case_when(Age < 55 & Gender == "male" ~ "<55 males" ,
                                                         Age >= 55  & Age <= 64 & Gender == "male"~ "55-64 males",
                                                         Age >= 65  & Age <= 74 & Gender == "male"~ "65-74 males",
                                                         Age >= 75  & Age <= 84 & Gender == "male"~ "75-84 males",
@@ -3451,7 +3513,7 @@ AEDB.CEA <- AEDB.CEA %>% mutate(AgeGroupSex = case_when(Age < 55 & Gender == "ma
                                                         Age >= 55  & Age <= 64 & Gender == "female"~ "55-64 females ",
                                                         Age >= 65  & Age <= 74 & Gender == "female"~ "65-74 females",
                                                         Age >= 75  & Age <= 84 & Gender == "female"~ "75-84 females",
-                                                        Age >= 85 & Gender == "female"~ "85+ females"))
+                                                        Age >= 85 & Gender == "female"~ "85+ females")))
 
 table(AEDB.CEA$AgeGroup, AEDB.CEA$Gender)
 table(AEDB.CEA$AgeGroupSex)
@@ -3459,54 +3521,87 @@ table(AEDB.CEA$AgeGroupSex)
 ```
 
 Now we can draw some graphs of serum/plaque MCP1 levels per sex and age group.
+
+### Inverse-rank transformed data
+
+#### MCP1 plaque levels
+
+```{r MCP1 per AgeGroup per Sex, ranked}
+
+# ?ggpubr::ggboxplot()
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("Gender"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("AgeGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+```
+
+#### MCP1 serum levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per AgeGroup per Sex, ranked serum}
+# compare_means(MCP1_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("Gender"),
+                  y = "MCP1_rank",
+                  xlab = "Gender",
+                  ylab = "MCP1 serum [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("AgeGroup"),
+                  y = "MCP1_rank",
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 serum [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+### Raw data
+
+Simalarly but now for the raw data as median ± interquartile range.
+
+#### MCP1 plaque levels
+
+
 ```{r MCP1 per AgeGroup per Sex}
 
 # ?ggpubr::ggboxplot()
 ggpubr::ggboxplot(AEDB.CEA, 
                   x = c("Gender"),
-                  y = "MCP1_pg_ug_2015_rank", 
-                  xlab = "Gender",
-                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
-                  color = "Gender",
-                  palette = c("#D5267B", "#1290D9"))
-
-ggpubr::ggboxplot(AEDB.CEA, 
-                  x = c("AgeGroup"),
-                  y = "MCP1_pg_ug_2015_rank", 
-                  xlab = "Age groups (years) per gender",
-                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
-                  color = "Gender",
-                  palette = c("#D5267B", "#1290D9"))
-
-ggpubr::ggboxplot(AEDB.CEA, 
-                  x = c("Gender"),
-                  y = "MCP1_rank", 
-                  xlab = "Gender",
-                  ylab = "MCP1 serum [pg/mL]\n(inverse-rank transformation)",
-                  color = "Gender",
-                  palette = c("#D5267B", "#1290D9"))
-
-ggpubr::ggboxplot(AEDB.CEA, 
-                  x = c("AgeGroup"),
-                  y = "MCP1_rank", 
-                  xlab = "Age groups (years) per gender",
-                  ylab = "MCP1 serum [pg/mL]\n(inverse-rank transformation)",
-                  color = "Gender",
-                  palette = c("#D5267B", "#1290D9"))
-```
-
-Simalarly but now for the raw data as median ± interquartile range.
-```{r MCP1 per AgeGroup per Sex, ranked}
-
-# ?ggpubr::ggboxplot()
-ggpubr::ggboxplot(AEDB.CEA, 
-                  x = c("Gender"),
                   y = "MCP1_pg_ug_2015", 
                   xlab = "Gender",
                   ylab = "MCP1 plaque [pg/ug]",
                   color = "Gender",
                   palette = c("#D5267B", "#1290D9"),
-                  add = "median_iqr")
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
 
 ggpubr::ggboxplot(AEDB.CEA, 
                   x = c("AgeGroup"),
@@ -3515,8 +3610,15 @@ ggpubr::ggboxplot(AEDB.CEA,
                   ylab = "MCP1 plaque [pg/ug]",
                   color = "Gender",
                   palette = c("#D5267B", "#1290D9"),
-                  add = "median_iqr")
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
 
+### MCP1 serum levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per AgeGroup per Sex, serum}
 ggpubr::ggboxplot(AEDB.CEA, 
                   x = c("Gender"),
                   y = "MCP1", 
@@ -3524,7 +3626,8 @@ ggpubr::ggboxplot(AEDB.CEA,
                   ylab = "MCP1 serum [pg/mL]",
                   color = "Gender",
                   palette = c("#D5267B", "#1290D9"),
-                  add = "median_iqr")
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
 
 ggpubr::ggboxplot(AEDB.CEA, 
                   x = c("AgeGroup"),
@@ -3533,11 +3636,17 @@ ggpubr::ggboxplot(AEDB.CEA,
                   ylab = "MCP1 serum [pg/mL]",
                   color = "Gender",
                   palette = c("#D5267B", "#1290D9"),
-                  add = "median_iqr")
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
 ```
+
+## Circulating vs. plaque MCP1 levels
 
 We will also make a nice correlation plot between serum and plaque MCP1 levels.
-```{r MCP1 correlations}
+
+> NOT AVAILABLE YET
+
+```{r MCP1 correlations, serum vs. plaque}
 
 ggpubr::ggscatter(AEDB.CEA, 
                   x = "MCP1_pg_ug_2015",
@@ -3553,6 +3662,32 @@ ggpubr::ggscatter(AEDB.CEA,
                   y = "MCP1_rank", 
                   xlab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
                   ylab = "MCP1 serum [pg/mL]\n(inverse-rank transformation)",
+                  add = "reg.line", add.params = list(color = "#1290D9"),
+                  conf.int = TRUE,
+                  cor.coef = TRUE, cor.coeff.args = list(method = "spearman"), cor.coef.coord = c(2,3))
+
+```
+
+## Plaque vs. plaque MCP1 levels
+We will also make a nice correlation plot between the two experiments of plaque MCP1 levels. 
+
+```{r MCP1 correlations, plaque vs. plaque}
+AEDB.CEA$MCP1_rank <- qnorm((rank(AEDB.CEA$MCP1, na.last = "keep") - 0.5) / sum(!is.na(AEDB.CEA$MCP1)))
+
+ggpubr::ggscatter(AEDB.CEA, 
+                  x = "MCP1", 
+                  y = "MCP1_pg_ug_2015",
+                  xlab = "MCP1 plaque [pg/mL] (exp. no. 1)",
+                  ylab = "MCP1 plaque [pg/ug] (exp. no. 2)",
+                  add = "reg.line", add.params = list(color = "#1290D9"),
+                  conf.int = TRUE,
+                  cor.coef = TRUE, cor.coeff.args = list(method = "spearman"), cor.coef.coord = c(8,750))
+
+ggpubr::ggscatter(AEDB.CEA, 
+                  x = "MCP1_rank", 
+                  y = "MCP1_pg_ug_2015_rank",
+                  xlab = "MCP1 plaque [pg/mL]\n(INRT,  exp. no. 1)",
+                  ylab = "MCP1 plaque [pg/ug]\n(INRT,  exp. no. 2)",
                   add = "reg.line", add.params = list(color = "#1290D9"),
                   conf.int = TRUE,
                   cor.coef = TRUE, cor.coeff.args = list(method = "spearman"), cor.coef.coord = c(2,3))
@@ -3591,7 +3726,9 @@ p1 <- ggpubr::ggboxplot(AEDB.CEA,
           ) +
   stat_compare_means(comparisons = my_comparisons, method = "wilcox.test")
 ggpar(p1, legend = c("right"), legend.title = "Symptoms")
+```
 
+```{r MCP1 per SymptomGroups, serum}
 p1 <- ggpubr::ggboxplot(AEDB.CEA, 
                   x = "AsymptSympt2G", y = "MCP1_rank",
                   title = "MCP1 serum [pg/mL] levels per symptom", 
@@ -3607,10 +3744,12 @@ ggpar(p1, legend = c("right"), legend.title = "Symptoms")
 rm(p1)
 ```
 
+## Forest plots
+
 We would also like to visualize the multivariable analyses results.
 ```{r load model data}
 library(ggplot2)
-
+library(openxlsx)
 model1_mcp1 <- read.xlsx(paste0(OUT_loc, "/", Today, ".AEDB.CEA.Bin.Uni.Protein.RANK.Symptoms.MODEL1.xlsx"))
 model2_mcp1 <- read.xlsx(paste0(OUT_loc, "/", Today, ".AEDB.CEA.Bin.Multi.Protein.RANK.Symptoms.MODEL2.xlsx"))
 model1_mcp1$model <- "univariate"
@@ -3662,124 +3801,229 @@ print(fp)
 rm(fp)
 ```
 
-Forest plots in R (ggplot) with side table
-========================================================
+## MCP1 vs. cytokines plaque levels 
 
-A friend asked me to help with a forest plot recently. After chatting about what she wanted the end result to look like, this is what I came up with.
+We will plot the correlations of other cytokine plaque levels to the MCP1 plaque levels. These include:
 
-```{r results='hide', tidy=F, echo=FALSE}
-library(ggplot2)
-library(gridExtra)
-dat <- data.frame(group = factor(c("A","B","C","D","E","F","G"), 
-                                 levels=c("F","E","D","C","B","A","G")),
-                  cen = c(3.1,2.0,1.6,3.2,3.6,7.6,NA),
-                  low = c(2,0.9,0.8,1.5,2,4.2,NA),
-                  high = c(6,4,2,6,5,14.5,NA))
+- IL2
+- IL4
+- IL5
+- IL6
+- IL8
+- IL9
+- IL10
+- IL12
+- IL13
+- IL21
+- INFG
+- TNFA
+- MIF
+- MCP1
+- MIP1a
+- RANTES
+- MIG
+- IP10
+- Eotaxin1
+- TARC
+- PARC
+- MDC
+- OPG
+- sICAM1
+- VEGFA
+- TGFB
 
-theme_set(theme_bw())
+In addition we will look at three metalloproteinases which were measured using an activity assay. 
 
-theme_update(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_blank(),
-    panel.background = element_blank(),
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    plot.margin = unit(c(0,0,0,0), "lines")
-)
+- MMP2
+- MMP8
+- MMP9
 
-p <- ggplot(dat,aes(cen,group)) + 
-    geom_point(size=5, shape=18) +
-    geom_errorbarh(aes(xmax = high, xmin = low), height = 0.15) +
-    geom_vline(xintercept = 1, linetype = "longdash") +
-    scale_x_continuous(breaks = seq(0,14,1), labels = seq(0,14,1)) +
-    labs(x="Adjusted Odds Ratio", y="")
+The proteins were measured using FACS and LUMINEX. Given the different platforms used (FACS vs. LUMINEX), we will inverse rank-normalize these variables as well to scale them to the same scale as the MCP1 plaque levels.
 
-lab <- data.frame(V0 = factor(c("A","B","C","D","E","F","G","A","B","C","D","E","F","G","A","B","C","D","E","F","G","A","B","C","D","E","F","G"),
-                              levels=c("G","F","E","D","C","B","A")),
-                  V05 = rep(c(1,2,3,4),each=7),
-                  V1 = c("Occuption","Active","","Inactive","","Inactive","","Recreation","Inactive","","Active","","Inactive","","Gender","Men","Women","Men","Women","Men","Women","OR",3.1,2.0,1.6,3.2,3.6,7.6)
-)
 
-data_table <- ggplot(lab, aes(x = V05, y = V0, 
-                              label = format(V1, nsmall = 1))) +
-    geom_text(size = 4, hjust=0, vjust=0.5) + theme_bw() +
-    geom_hline(aes(yintercept=c(6.5,7.5))) + 
-    theme(panel.grid.major = element_blank(), 
-          legend.position = "none",
-          panel.border = element_blank(), 
-          axis.text.x = element_text(colour="white"),#element_blank(),
-          axis.text.y = element_blank(), 
-          axis.ticks = element_line(colour="white"),#element_blank(),
-          plot.margin = unit(c(0,0,0,0), "lines")) +
-              labs(x="",y="") +
-              coord_cartesian(xlim=c(1,4.5))
+```{r MCP1 vs Cytokines IRN}
+cytokines <- c("IL2", "IL4", "IL5", "IL6", "IL8", "IL9", "IL10", "IL12", "IL13", "IL21", 
+               "INFG", "TNFA", "MIF", "MCP1", "MIP1a", "RANTES", "MIG", "IP10", "Eotaxin1", 
+               "TARC", "PARC", "MDC", "OPG", "sICAM1", "VEGFA", "TGFB")
+metalloproteinases <- c("MMP2", "MMP8", "MMP9")
+
+# fix names
+names(AEDB.CEA)[names(AEDB.CEA) == "VEFGA"] <- "VEGFA"
+
+
+proteins_of_interest <- c(cytokines, metalloproteinases)
+
+proteins_of_interest_rank = unlist(lapply(proteins_of_interest, paste0, "_rank"))
+
+
+# make variables numerics()
+AEDB.CEA <- AEDB.CEA %>%
+  mutate_each(funs(as.numeric), proteins_of_interest)
+  
+for(PROTEIN in 1:length(proteins_of_interest)){
+
+  # UCORBIOGSAqc$Z <- NULL
+  var.temp.rank = proteins_of_interest_rank[PROTEIN]
+  var.temp = proteins_of_interest[PROTEIN]
+  
+  cat(paste0("\nSelecting ", var.temp, " and standardising: ", var.temp.rank,".\n"))
+  cat(paste0("* changing ", var.temp, " to numeric.\n"))
+
+  # AEDB.CEA <-  AEDB.CEA %>% mutate(AEDB.CEA[,var.temp] == replace(AEDB.CEA[,var.temp], AEDB.CEA[,var.temp]==0, NA))
+
+  AEDB.CEA[,var.temp][AEDB.CEA[,var.temp]==0.000000]=NA
+
+  cat(paste0("* standardising ", var.temp, 
+             " (mean: ",round(mean(!is.na(AEDB.CEA[,var.temp])), digits = 6),
+             ", n = ",sum(!is.na(AEDB.CEA[,var.temp])),").\n"))
+  
+  AEDB.CEA <- AEDB.CEA %>%
+      mutate_at(vars(var.temp), 
+        # list(Z = ~ (AEDB.CEA[,var.temp] - mean(AEDB.CEA[,var.temp], na.rm = TRUE))/sd(AEDB.CEA[,var.temp], na.rm = TRUE))
+        list(RANK = ~ qnorm((rank(AEDB.CEA[,var.temp], na.last = "keep") - 0.5) / sum(!is.na(AEDB.CEA[,var.temp]))))
+      )
+  # str(UCORBIOGSAqc$Z)
+  cat(paste0("* renaming RANK to ", var.temp.rank,".\n"))
+  AEDB.CEA[,var.temp.rank] <- NULL
+  names(AEDB.CEA)[names(AEDB.CEA) == "RANK"] <- var.temp.rank
+}
+
+# rm(var.temp, var.temp.rank)
+
 ```
 
-```{r forest_plot_1, fig.width=8, fig.height=4, tidy=F}
-# grid.arrange(data_table, p, ncol=2)
-library(patchwork)
-data_table | p
+We will just visualize these transformations.
+
+```{r MCP1 vs Cytokines Histograms}
+proteins_of_interest_rank_mcp1 <- c("MCP1_pg_ug_2015_rank", proteins_of_interest_rank)
+
+proteins_of_interest_mcp1 <- c("MCP1_pg_ug_2015", proteins_of_interest)
+
+for(PROTEIN in proteins_of_interest_mcp1){
+  cat(paste0("Plotting protein ", PROTEIN, ".\n"))
+  
+  p1 <- ggpubr::gghistogram(AEDB.CEA, PROTEIN,
+                    # y = "..count..",
+                    color = "white",
+                    fill = "Gender",
+                    palette = c("#1290D9", "#DB003F"),
+                    add = "mean",
+                    # rug = TRUE,
+                    # add.params =  list(color = "black", linetype = 2),
+                    title = paste0(PROTEIN, " plaque levels"),
+                    xlab = "",
+                    ggtheme = theme_minimal())
+  print(p1)
+  
+}
+
+
+for(PROTEIN in proteins_of_interest_rank_mcp1){
+  cat(paste0("Plotting protein ", PROTEIN, ".\n"))
+  
+  p1 <- ggpubr::gghistogram(AEDB.CEA, PROTEIN,
+                    # y = "..count..",
+                    color = "white",
+                    fill = "Gender",
+                    palette = c("#1290D9", "#DB003F"),
+                    add = "mean",
+                    # rug = TRUE,
+                    # add.params =  list(color = "black", linetype = 2),
+                    title = paste0(PROTEIN, " plaque levels"),
+                    xlab = "inverse-normal transformation",
+                    ggtheme = theme_minimal())
+  print(p1)
+  
+}
+  
 ```
 
-Some other options for forest plots included this:
+```{r balbla}
+# Installation of ggcorrplot()
+# --------------------------------
+if(!require(devtools)) 
+  install.packages("devtools")
+devtools::install_github("kassambara/ggcorrplot")
+
+library(ggcorrplot)
 
 
+# Creating matrix - inverse-rank transformation
+# --------------------------------
+AEDB.CEA.temp <- subset(AEDB.CEA, 
+                          select = c(proteins_of_interest_rank_mcp1)
+                                    )
 
-From [Abhijit](http://statbandit.wordpress.com/2010/11/01/forest-plots-using-r-and-ggplot2/) blog. But I figured I'd start a fresh, and I'd already borrowed [some code](http://mcfromnz.wordpress.com/2012/05/05/kaplan-meier-survival-plot-with-at-risk-table-by-sub-groups/) of Abhijits in the past for a survival curve.
+# str(AEDB.CEA.temp)
+AEDB.CEA.matrix.RANK <- as.matrix(AEDB.CEA.temp)
+rm(AEDB.CEA.temp)
 
-The package [rmeta](http://cran.r-project.org/web/packages/rmeta/index.html) offers two different versions. One with forestplot like so:
+corr_biomarkers.rank <- round(cor(AEDB.CEA.matrix.RANK, 
+                             use = "pairwise.complete.obs", #the correlation or covariance between each pair of variables is computed using all complete pairs of observations on those variables
+                             method = "spearman"), 3)
+# corr_biomarkers.rank
 
-```{r forest_plot_2, fig.width=6, fig.height=6, tidy=F, echo=FALSE}
-library(rmeta)
-data(cochrane)
-steroid <- meta.MH(n.trt, n.ctrl, ev.trt, ev.ctrl,
-names=name, data=cochrane)
-tabletext<-cbind(c("","Study",steroid$names,NA,"Summary"),
-c("Deaths","(steroid)",cochrane$ev.trt,NA,NA),
-c("Deaths","(placebo)", cochrane$ev.ctrl, NA,NA),
-c("","OR",format(exp(steroid$logOR),digits=2),NA,format(exp(steroid$logMH),digits=2))
-)
-m<- c(NA,NA,steroid$logOR,NA,steroid$logMH)
-l<- m-c(NA,NA,steroid$selogOR,NA,steroid$selogMH)*2
-u<- m+c(NA,NA,steroid$selogOR,NA,steroid$selogMH)*2
-forestplot(tabletext,m,l,u,zero=0,is.summary=c(TRUE,TRUE,rep(FALSE,8),TRUE),
-clip=c(log(0.1),log(2.5)), xlog=TRUE,
-col=meta.colors(box="royalblue",line="darkblue", summary="royalblue"))
+rename_proteins_of_interest_mcp1 <- c("MCP1 (L, exp2)", 
+                                    "IL2", "IL4", "IL5", "IL6", "IL8", "IL9", "IL10", "IL12", 
+                                    "IL13 (L)", "IL21 (L)", 
+                                    "INFG", "TNFA", "MIF (L)", 
+                                    "MCP1 (L, exp1)", "MIP1a (L)", "RANTES (L)", "MIG (L)", "IP10 (L)", 
+                                    "Eotaxin1 (L)", "TARC (L)", "PARC (L)", "MDC (L)", 
+                                    "OPG (L)", "sICAM1 (L)", "VEGFA (E)", "TGFB (E)", "MMP2 (r)", "MMP8 (r)", "MMP9 (r)")
+colnames(corr_biomarkers.rank) <- c(rename_proteins_of_interest_mcp1)
+rownames(corr_biomarkers.rank) <- c(rename_proteins_of_interest_mcp1)
+
+corr_biomarkers_p.rank <- ggcorrplot::cor_pmat(AEDB.CEA.matrix.RANK, use = "pairwise.complete.obs", method = "spearman")
+
+# Add correlation coefficients
+# --------------------------------
+# argument lab = TRUE
+ggcorrplot(corr_biomarkers.rank, 
+           method = "square", 
+           type = "lower",
+           title = "Cross biomarker correlations", 
+           show.legend = TRUE, legend.title = bquote("Spearman's"~italic(rho)),
+           ggtheme = ggplot2::theme_minimal, outline.color = "#FFFFFF",
+           show.diag = TRUE,
+           hc.order = FALSE, 
+           lab = FALSE,
+           digits = 3,
+           tl.cex = 6,
+           # xlab = c("MCP1"),
+           # p.mat = corr_biomarkers_p.rank, sig.level = 0.05,
+           colors = c("#1290D9", "#FFFFFF", "#E55738"))
+
 ```
 
-And one with metaplot like so:
 
-```{r forest_plot_3, fig.width=6, fig.height=6, tidy=F, echo=FALSE}
-data(catheter)
-a <- meta.MH(n.trt, n.ctrl, col.trt, col.ctrl, data=catheter,
-names=Name, subset=c(13,6,5,3,7,12,4,11,1,8,10,2))
-metaplot(a$logOR, a$selogOR, nn=a$selogOR^-2, a$names,
-summn=a$logMH, sumse=a$selogMH, sumnn=a$selogMH^-2,
-logeffect=TRUE)
-```
-
-Ultimately the two would be used for different purposes, and these examples shown are straight from the [manual](http://cran.r-project.org/web/packages/rmeta/rmeta.pdf) for [rmeta](http://cran.r-project.org/web/packages/rmeta/index.html). 
-
-It wasn't too much work to create 'another' custom option to get what my friend wanted, so thought I'd share the code for anyone else interest. There was a little bit of 'misdirection' for lack of a better term to get it across the line, and I'm sure elements of this are sloppy. You can access the code on my [github](https://github.com/nzcoops/blog_code/blob/master/forest_plot.Rmd).
-
-I wrote this post in [RStudio](http://rstudio.org/download/) using the [R Markdown](http://www.rstudio.org/docs/authoring/using_markdown) language and then [knitr](http://yihui.name/knitr/) to turn in into markdown (.md), and then [pandoc](http://johnmacfarlane.net/pandoc/) to turn it into html. The original file is available here on [github](https://github.com/nzcoops/blog_code/blob/master/forest_plot.Rmd).
-
-system("pandoc -s forest_plot.md -o forest_plot.html")
 
 # Session information
 
 ------
 
-    Version:      v1.0.6
-    Last update:  2020-06-16
+    Version:      v1.0.8
+    Last update:  2020-06-25
     Written by:   Sander W. van der Laan (s.w.vanderlaan-2[at]umcutrecht.nl).
     Description:  Script to analyse MCP1 from the Ather-Express Biobank Study.
     Minimum requirements: R version 3.5.2 (2018-12-20) -- 'Eggshell Igloo', macOS Mojave (10.14.2).
     
+    **MoSCoW To-Do List**
+    The things we Must, Should, Could, and Would have given the time we have.
+    _M_
+    * analysis on serum
     
-    Changes log
+    _S_
+    * prettify forest plot
+    
+    _C_
+    
+    
+    _W_
+    
+    
+    **Changes log**
+    * v1.0.8 Fixed error in MCP1 serum analysis. It turns out the `MCP1` and `MCP1_pg_ug_2015` variables are _both_ measured in plaque, in two separate experiments, exp. no. 1 and exp. no. 2, respectively. 
+    * v1.0.7 Fixed the per Age-group MCP1 Box plots. Added correlations with other cytokines in plaques.
     * v1.0.6 Only analyses and figures that end up in the final manuscript.
     * v1.0.5 Update with 30- and 90-days survival.
     * v1.0.4 Updated with Cox-regressions.
