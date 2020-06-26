@@ -4259,7 +4259,8 @@ rm(TRAIT, trait, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
     **MoSCoW To-Do List**
     The things we Must, Should, Could, and Would have given the time we have.
     _M_
-    * analysis on serum ASAP
+    * analysis on serum based on OLINK platform ASAP
+    * analysis on the pilot dataset on the OLINK platform, comparing serum vs. plaque ASAP
     * linear regression models (model 1 and model 2) of `MCP1_pg_ug_2015` with cytokines DONE
     * check out the difference between the measuremens of `MCP1` and `MCP1_pg_ug_2015` MONDAY
     * double check the plotting of the MACE DONE
