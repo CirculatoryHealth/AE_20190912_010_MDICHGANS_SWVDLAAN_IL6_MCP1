@@ -1904,9 +1904,6 @@ We will perform a cross-sectional analysis between plaque and serum MCP1, IL6, a
 
 In this model we correct for _Age_, and _Gender_.
 
-Here we use the inverse-rank normalized data - visually this is more normally distributed.
-
-#### Quantitative plaque traits
 
 ```{r CrossSec: symptoms - logistic regression MODEL1 RANK, include=TRUE, paged.print=TRUE}
 
@@ -1977,10 +1974,6 @@ rm(TRAIT, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
 ### Model 2
 
 In this model we correct for _Age_, _Gender_, _Hypertension status_, _Diabetes status_, _current smoker status_, _lipid-lowering drugs (LLDs)_, _antiplatelet medication_, _eGFR (MDRD)_, _BMI_, _MedHx_CVD_ (combination of _CAD history_, _stroke history_, and _peripheral interventions_), and _stenosis._.
-
-Here we use the inverse-rank normalized data - visually this is more normally distributed.
-
-#### Binary plaque traits
 
 
 ```{r CrossSec: symptoms - logistic regression MODEL2 RANK, include=TRUE, paged.print=TRUE}
@@ -2362,7 +2355,7 @@ for (eventtime in times){
               main = eventtime, bins = 15, 
               xlab = "year", color = uithof_color[16], fill = uithof_color[16], ggtheme = theme_minimal()) 
  print(p)
- ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.EventDistributionPerYear.",eventtime,".pdf"), plot = last_plot())
+ ggsave(file = paste0(QC_loc, "/",Today,".AEDB.CEA.EventDistributionPerYear.",eventtime,".pdf"), plot = last_plot())
 }
 
 times30 = c("ep_major_t_30days", 
@@ -2391,7 +2384,7 @@ for (eventtime in times30){
               main = eventtime, bins = 15, 
               xlab = "days", color = uithof_color[16], fill = uithof_color[16], ggtheme = theme_minimal()) 
  print(p)
- ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.EventDistributionPer30Days.",eventtime,".pdf"), plot = last_plot())
+ ggsave(file = paste0(QC_loc, "/",Today,".AEDB.CEA.EventDistributionPer30Days.",eventtime,".pdf"), plot = last_plot())
 }
 
 times90 = c("ep_major_t_90days", 
@@ -2420,7 +2413,7 @@ for (eventtime in times90){
               main = eventtime, bins = 15, 
               xlab = "days", color = uithof_color[16], fill = uithof_color[16], ggtheme = theme_minimal()) 
  print(p)
- ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.EventDistributionPer90Days.",eventtime,".pdf"), plot = last_plot())
+ ggsave(file = paste0(QC_loc, "/",Today,".AEDB.CEA.EventDistributionPer90Days.",eventtime,".pdf"), plot = last_plot())
 }
 
 
@@ -3673,6 +3666,8 @@ We will also make a nice correlation plot between the two experiments of plaque 
 
 ```{r MCP1 correlations, plaque vs. plaque}
 AEDB.CEA$MCP1_rank <- qnorm((rank(AEDB.CEA$MCP1, na.last = "keep") - 0.5) / sum(!is.na(AEDB.CEA$MCP1)))
+summary(AEDB.CEA$MCP1)
+summary(AEDB.CEA$MCP1_pg_ug_2015)
 
 ggpubr::ggscatter(AEDB.CEA, 
                   x = "MCP1", 
@@ -3681,7 +3676,7 @@ ggpubr::ggscatter(AEDB.CEA,
                   ylab = "MCP1 plaque [pg/ug] (exp. no. 2)",
                   add = "reg.line", add.params = list(color = "#1290D9"),
                   conf.int = TRUE,
-                  cor.coef = TRUE, cor.coeff.args = list(method = "spearman"), cor.coef.coord = c(8,750))
+                  cor.coef = TRUE, cor.coeff.args = list(method = "spearman"))
 
 ggpubr::ggscatter(AEDB.CEA, 
                   x = "MCP1_rank", 
@@ -3690,7 +3685,7 @@ ggpubr::ggscatter(AEDB.CEA,
                   ylab = "MCP1 plaque [pg/ug]\n(INRT,  exp. no. 2)",
                   add = "reg.line", add.params = list(color = "#1290D9"),
                   conf.int = TRUE,
-                  cor.coef = TRUE, cor.coeff.args = list(method = "spearman"), cor.coef.coord = c(2,3))
+                  cor.coef = TRUE, cor.coeff.args = list(method = "spearman"))
 
 ```
 
@@ -3801,7 +3796,7 @@ print(fp)
 rm(fp)
 ```
 
-## MCP1 vs. cytokines plaque levels 
+## MCP1 vs. cytokines plaque levels correlations
 
 We will plot the correlations of other cytokine plaque levels to the MCP1 plaque levels. These include:
 
@@ -3841,7 +3836,10 @@ In addition we will look at three metalloproteinases which were measured using a
 The proteins were measured using FACS and LUMINEX. Given the different platforms used (FACS vs. LUMINEX), we will inverse rank-normalize these variables as well to scale them to the same scale as the MCP1 plaque levels.
 
 
-```{r MCP1 vs Cytokines IRN}
+We will set the measurements that yielded '0' to NA, as it is unlikely that any protein ever has exactly 0 copies. The '0' yielded during the experiment are due to the limits of the detection.
+
+### Prepare data
+```{r MCP1 vs Cytokines INRT}
 cytokines <- c("IL2", "IL4", "IL5", "IL6", "IL8", "IL9", "IL10", "IL12", "IL13", "IL21", 
                "INFG", "TNFA", "MIF", "MCP1", "MIP1a", "RANTES", "MIG", "IP10", "Eotaxin1", 
                "TARC", "PARC", "MDC", "OPG", "sICAM1", "VEGFA", "TGFB")
@@ -3892,6 +3890,8 @@ for(PROTEIN in 1:length(proteins_of_interest)){
 
 ```
 
+### Visualize transformations
+
 We will just visualize these transformations.
 
 ```{r MCP1 vs Cytokines Histograms}
@@ -3938,7 +3938,15 @@ for(PROTEIN in proteins_of_interest_rank_mcp1){
   
 ```
 
-```{r balbla}
+### Correlations
+
+Here we calculate correlations between `MCP1_pg_ug_2015` and 28 other cytokines (including `MCP1` as measured in experiment 1. We use Spearman's test, thus, correlations a given in _rho_. Please note the indications of measurement methods:
+
+- _L_: LUMINEX
+- _E_: ELISA
+- _a_: activity assay
+
+```{r MCP1 vs Cytokines correlations}
 # Installation of ggcorrplot()
 # --------------------------------
 if(!require(devtools)) 
@@ -3946,7 +3954,6 @@ if(!require(devtools))
 devtools::install_github("kassambara/ggcorrplot")
 
 library(ggcorrplot)
-
 
 # Creating matrix - inverse-rank transformation
 # --------------------------------
@@ -3969,16 +3976,45 @@ rename_proteins_of_interest_mcp1 <- c("MCP1 (L, exp2)",
                                     "INFG", "TNFA", "MIF (L)", 
                                     "MCP1 (L, exp1)", "MIP1a (L)", "RANTES (L)", "MIG (L)", "IP10 (L)", 
                                     "Eotaxin1 (L)", "TARC (L)", "PARC (L)", "MDC (L)", 
-                                    "OPG (L)", "sICAM1 (L)", "VEGFA (E)", "TGFB (E)", "MMP2 (r)", "MMP8 (r)", "MMP9 (r)")
+                                    "OPG (L)", "sICAM1 (L)", "VEGFA (E)", "TGFB (E)", "MMP2 (a)", "MMP8 (a)", "MMP9 (a)")
 colnames(corr_biomarkers.rank) <- c(rename_proteins_of_interest_mcp1)
 rownames(corr_biomarkers.rank) <- c(rename_proteins_of_interest_mcp1)
 
 corr_biomarkers_p.rank <- ggcorrplot::cor_pmat(AEDB.CEA.matrix.RANK, use = "pairwise.complete.obs", method = "spearman")
 
+# ++++++++++++++++++++++++++++
+# flattenCorrMatrix
+# ++++++++++++++++++++++++++++
+# cormat : matrix of the correlation coefficients
+# pmat : matrix of the correlation p-values
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+corr_biomarkers.rank.df <- flattenCorrMatrix(corr_biomarkers.rank, corr_biomarkers_p.rank)
+
+
+names(corr_biomarkers.rank.df)[names(corr_biomarkers.rank.df) == "row"] <- "Cytokine_X"
+names(corr_biomarkers.rank.df)[names(corr_biomarkers.rank.df) == "column"] <- "CytokineY"
+names(corr_biomarkers.rank.df)[names(corr_biomarkers.rank.df) == "cor"] <- "SpearmanRho"
+
+DT::datatable(corr_biomarkers.rank.df)
+
+fwrite(corr_biomarkers.rank.df, file = paste0(OUT_loc, "/",Today,".correlation_cytokines.txt"))
+
+```
+
+```{r MCP1 vs Cytokines heatmap}
 # Add correlation coefficients
 # --------------------------------
 # argument lab = TRUE
-ggcorrplot(corr_biomarkers.rank, 
+p1 <- ggcorrplot(corr_biomarkers.rank, 
            method = "square", 
            type = "lower",
            title = "Cross biomarker correlations", 
@@ -3992,6 +4028,219 @@ ggcorrplot(corr_biomarkers.rank,
            # xlab = c("MCP1"),
            # p.mat = corr_biomarkers_p.rank, sig.level = 0.05,
            colors = c("#1290D9", "#FFFFFF", "#E55738"))
+p1
+ggsave(filename = paste0(PLOT_loc, "/", Today, ".correlation_cytokines.png"), plot = last_plot())
+rm(p1)
+
+```
+
+While visually actractive we are not necessarily interested in the correlations between all the cytokines, rather of MCP1 with other cytokines only.
+
+```{r MCP1 vs Cytokines barplot}
+temp <- subset(corr_biomarkers.rank.df, Cytokine_X == "MCP1 (L, exp2)" )
+temp$p_log10 <- -log10(temp$p)
+p_threshold <- -log10(0.05/29)
+p_threshold
+p1 <- ggbarplot(temp, x = "CytokineY", y = "SpearmanRho",
+          fill = "CytokineY",               # change fill color by cyl
+          # color = "white",            # Set bar border colors to white
+          palette = uithof_color,            # jco journal color palett. see ?ggpar
+          xlab = "Cytokine",
+          ylab = expression("Spearman's"~italic(rho)),
+          sort.val = "desc",          # Sort the value in dscending order
+          sort.by.groups = FALSE,     # Don't sort inside each group
+          x.text.angle = 45, # Rotate vertically x axis texts
+          cex = 0.8
+          )
+ggpar(p1, legend = "bottom", 
+      legend.title = "") +
+  theme(axis.text.x = element_text(size = 9),
+        axis.text.y = element_text(size = 9)) 
+
+rm(p1)
+```
+
+Another version - problably not good. 
+```{r MCP1 vs Cytokines dotchart}
+
+p1 <- ggdotchart(temp, x = "CytokineY", y = "p_log10",
+           color = "CytokineY",                                # Color by groups
+           palette = uithof_color, # Custom color palette
+           xlab = "Cytokine",
+           ylab = expression(log[10]~"("~italic(p)~")-value"),
+           ylim = c(0, 6),
+           sorting = "descending",                       # Sort value in descending order
+           add = "segments",                             # Add segments from y = 0 to dots
+           rotate = FALSE,                                # Rotate vertically
+           # group = "CytokineY",                                # Order by groups
+           dot.size = 8,                                 # Large dot size
+           label = round(temp$SpearmanRho, digits = 3),                        # Add mpg values as dot labels
+           font.label = list(color = "white", size = 8, 
+                             vjust = 0.5)                   
+           )
+ggpar(p1, legend = "bottom", 
+      legend.title = "") +
+  theme(axis.text.x = element_text(size = 9),
+        axis.text.y = element_text(size = 9))
+
+# rm(temp, p1)
+
+```
+
+
+## MCP1 vs. cytokines plaque levels `lm()`
+
+### Model 1
+
+In this model we correct for _Age_ and _Gender_.
+
+Here we use the inverse-rank normalized data - visually this is more normally distributed.
+
+Analysis of plaque cytokines traits as a function of serum/plaque MCP1 levels.
+```{r CrossSec: Cytokines - linear regression MODEL1 RANK, include=TRUE, paged.print=TRUE}
+
+GLM.results <- data.frame(matrix(NA, ncol = 15, nrow = 0))
+cat("Running linear regression...\n")
+for (protein in 1:length(TRAITS.PROTEIN.RANK)) {
+  PROTEIN = TRAITS.PROTEIN.RANK[protein]
+  cat(paste0("\nAnalysis of ",PROTEIN,".\n"))
+  for (trait in 1:length(proteins_of_interest_rank)) {
+    TRAIT = proteins_of_interest_rank[trait]
+    cat(paste0("\n- processing ",TRAIT,"\n\n"))
+    currentDF <- as.data.frame(AEDB.CEA %>%
+      dplyr::select(., PROTEIN, TRAIT, COVARIATES_M1) %>%
+      filter(complete.cases(.))) %>%
+      filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
+    # for debug
+    # print(DT::datatable(currentDF))
+    # print(nrow(currentDF))
+    # print(str(currentDF))
+    ### univariate
+    fit <- lm(currentDF[,PROTEIN] ~ currentDF[,TRAIT] + Age + Gender, data = currentDF)
+    model_step <- stepAIC(fit, direction = "both", trace = FALSE)
+    print(model_step)
+    print(summary(fit))
+
+    GLM.results.TEMP <- data.frame(matrix(NA, ncol = 15, nrow = 0))
+    GLM.results.TEMP[1,] = GLM.CON(fit, "AEDB.CEA", PROTEIN, TRAIT, verbose = TRUE)
+    GLM.results = rbind(GLM.results, GLM.results.TEMP)
+  }
+}
+cat("Edit the column names...\n")
+colnames(GLM.results) = c("Dataset", "Predictor", "Trait",
+                          "Beta", "s.e.m.",
+                          "OR", "low95CI", "up95CI",
+                          "T-value", "P-value", "r^2", "r^2_adj", "AE_N", "Model_N", "Perc_Miss")
+
+cat("Correct the variable types...\n")
+GLM.results$Beta <- as.numeric(GLM.results$Beta)
+GLM.results$s.e.m. <- as.numeric(GLM.results$s.e.m.)
+GLM.results$OR <- as.numeric(GLM.results$OR)
+GLM.results$low95CI <- as.numeric(GLM.results$low95CI)
+GLM.results$up95CI <- as.numeric(GLM.results$up95CI)
+GLM.results$`T-value` <- as.numeric(GLM.results$`T-value`)
+GLM.results$`P-value` <- as.numeric(GLM.results$`P-value`)
+GLM.results$`r^2` <- as.numeric(GLM.results$`r^2`)
+GLM.results$`r^2_adj` <- as.numeric(GLM.results$`r^2_adj`)
+GLM.results$`AE_N` <- as.numeric(GLM.results$`AE_N`)
+GLM.results$`Model_N` <- as.numeric(GLM.results$`Model_N`)
+GLM.results$`Perc_Miss` <- as.numeric(GLM.results$`Perc_Miss`)
+```
+
+```{r CrossSec: Cytokines - linear regression MODEL1 RANK Writing}
+DT::datatable(GLM.results)
+
+# Save the data
+cat("Writing results to Excel-file...\n")
+### Univariate
+library(openxlsx)
+write.xlsx(GLM.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Con.Uni.MCP1_Plaque.Cytokines_Plaques.RANK.MODEL1.xlsx"),
+           row.names = FALSE, col.names = TRUE, sheetName = "Con.Uni.PlaquePheno")
+# Removing intermediates
+cat("Removing intermediate files...\n")
+rm(TRAIT, trait, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
+
+
+```
+
+
+
+### Model 2
+
+In this model we correct for _Age_, _Gender_, _Hypertension status_, _Diabetes status_, _current smoker status_, _lipid-lowering drugs (LLDs)_, _antiplatelet medication_, _eGFR (MDRD)_, _BMI_, _MedHx_CVD_ (combination of _CAD history_, _stroke history_, and _peripheral interventions_), and _stenosis_.
+
+Here we use the inverse-rank normalized data - visually this is more normally distributed.
+
+Analysis of plaque cytokines as a function of serum/plaque MCP1 levels.
+```{r CrossSec: Cytokines - linear regression MODEL2 RANK, include=TRUE, paged.print=TRUE}
+
+GLM.results <- data.frame(matrix(NA, ncol = 15, nrow = 0))
+cat("Running linear regression...\n")
+for (protein in 1:length(TRAITS.PROTEIN.RANK)) {
+  PROTEIN = TRAITS.PROTEIN.RANK[protein]
+  cat(paste0("\nAnalysis of ",PROTEIN,".\n"))
+  for (trait in 1:length(proteins_of_interest_rank)) {
+    TRAIT = proteins_of_interest_rank[trait]
+    cat(paste0("\n- processing ",TRAIT,"\n\n"))
+    currentDF <- as.data.frame(AEDB.CEA %>%
+      dplyr::select(., PROTEIN, TRAIT, COVARIATES_M2) %>%
+      filter(complete.cases(.))) %>%
+      filter_if(~is.numeric(.), all_vars(!is.infinite(.)))
+    # for debug
+    # print(DT::datatable(currentDF))
+    # print(nrow(currentDF))
+    # print(str(currentDF))
+    ### univariate
+    fit <- lm(currentDF[,PROTEIN] ~ currentDF[,TRAIT] + Age + Gender + 
+                Hypertension.composite + DiabetesStatus + SmokerStatus + 
+                Med.Statin.LLD + Med.all.antiplatelet + GFR_MDRD + BMI + 
+                MedHx_CVD + stenose, 
+              data = currentDF)
+    model_step <- stepAIC(fit, direction = "both", trace = FALSE)
+    print(model_step)
+    print(summary(fit))
+    
+    GLM.results.TEMP <- data.frame(matrix(NA, ncol = 15, nrow = 0))
+    GLM.results.TEMP[1,] = GLM.CON(fit, "AEDB.CEA", PROTEIN, TRAIT, verbose = TRUE)
+    GLM.results = rbind(GLM.results, GLM.results.TEMP)
+  }
+}
+cat("Edit the column names...\n")
+colnames(GLM.results) = c("Dataset", "Predictor", "Trait",
+                          "Beta", "s.e.m.",
+                          "OR", "low95CI", "up95CI",
+                          "T-value", "P-value", "r^2", "r^2_adj", "AE_N", "Model_N", "Perc_Miss")
+
+cat("Correct the variable types...\n")
+GLM.results$Beta <- as.numeric(GLM.results$Beta)
+GLM.results$s.e.m. <- as.numeric(GLM.results$s.e.m.)
+GLM.results$OR <- as.numeric(GLM.results$OR)
+GLM.results$low95CI <- as.numeric(GLM.results$low95CI)
+GLM.results$up95CI <- as.numeric(GLM.results$up95CI)
+GLM.results$`T-value` <- as.numeric(GLM.results$`T-value`)
+GLM.results$`P-value` <- as.numeric(GLM.results$`P-value`)
+GLM.results$`r^2` <- as.numeric(GLM.results$`r^2`)
+GLM.results$`r^2_adj` <- as.numeric(GLM.results$`r^2_adj`)
+GLM.results$`AE_N` <- as.numeric(GLM.results$`AE_N`)
+GLM.results$`Model_N` <- as.numeric(GLM.results$`Model_N`)
+GLM.results$`Perc_Miss` <- as.numeric(GLM.results$`Perc_Miss`)
+```
+
+```{r CrossSec: Cytokines - linear regression MODEL2 RANK, writing}
+DT::datatable(GLM.results)
+
+# Save the data
+cat("Writing results to Excel-file...\n")
+### Univariate
+library(openxlsx)
+write.xlsx(GLM.results,
+           file = paste0(OUT_loc, "/",Today,".AEDB.CEA.Con.Multi.MCP1_Plaque.Cytokines_Plaques.RANK.MODEL2.xlsx"),
+           row.names = FALSE, col.names = TRUE, sheetName = "Con.Multi.PlaquePheno")
+# Removing intermediates
+cat("Removing intermediate files...\n")
+rm(TRAIT, trait, currentDF, GLM.results, GLM.results.TEMP, fit, model_step)
+
 
 ```
 
@@ -4010,11 +4259,11 @@ ggcorrplot(corr_biomarkers.rank,
     **MoSCoW To-Do List**
     The things we Must, Should, Could, and Would have given the time we have.
     _M_
-    * analysis on serum
-    * linear regression models (model 1 and model 2) of `MCP1_pg_ug_2015` with cytokines
-    * check out the difference between the measuremens of `MCP1` and `MCP1_pg_ug_2015`.
-    * double check the plotting of the 
-    * add the statistics for the correlation of `MCP1_pg_ug_2015` with the cytokines
+    * analysis on serum ASAP
+    * linear regression models (model 1 and model 2) of `MCP1_pg_ug_2015` with cytokines DONE
+    * check out the difference between the measuremens of `MCP1` and `MCP1_pg_ug_2015` MONDAY
+    * double check the plotting of the MACE DONE
+    * add the statistics for the correlation of `MCP1_pg_ug_2015` with the cytokines DONE
     
     _S_
     * prettify forest plot
@@ -4026,6 +4275,7 @@ ggcorrplot(corr_biomarkers.rank,
     
     
     **Changes log**
+    * v1.0.9 Added linear regression models for MCP1 vs. cytokines plaque levels. Double checked upload of MACE-plots. Added statistics from correlation (heatmap) to txt-file.
     * v1.0.8 Fixed error in MCP1 serum analysis. It turns out the `MCP1` and `MCP1_pg_ug_2015` variables are _both_ measured in plaque, in two separate experiments, exp. no. 1 and exp. no. 2, respectively. 
     * v1.0.7 Fixed the per Age-group MCP1 Box plots. Added correlations with other cytokines in plaques.
     * v1.0.6 Only analyses and figures that end up in the final manuscript.
