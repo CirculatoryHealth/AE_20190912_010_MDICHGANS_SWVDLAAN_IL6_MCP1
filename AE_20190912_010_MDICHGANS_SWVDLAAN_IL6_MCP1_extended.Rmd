@@ -4001,8 +4001,8 @@ ggcorrplot(corr_biomarkers.rank,
 
 ------
 
-    Version:      v1.0.8
-    Last update:  2020-06-25
+    Version:      v1.0.9
+    Last update:  2020-06-26
     Written by:   Sander W. van der Laan (s.w.vanderlaan-2[at]umcutrecht.nl).
     Description:  Script to analyse MCP1 from the Ather-Express Biobank Study.
     Minimum requirements: R version 3.5.2 (2018-12-20) -- 'Eggshell Igloo', macOS Mojave (10.14.2).
@@ -4011,6 +4011,10 @@ ggcorrplot(corr_biomarkers.rank,
     The things we Must, Should, Could, and Would have given the time we have.
     _M_
     * analysis on serum
+    * linear regression models (model 1 and model 2) of `MCP1_pg_ug_2015` with cytokines
+    * check out the difference between the measuremens of `MCP1` and `MCP1_pg_ug_2015`.
+    * double check the plotting of the 
+    * add the statistics for the correlation of `MCP1_pg_ug_2015` with the cytokines
     
     _S_
     * prettify forest plot
