@@ -1,0 +1,190 @@
+---
+title: "Plaque vs. plasma MCP-1 levels"
+author: "Arjan Boltjes"
+date: "29/06/2020"
+output: 
+  html_document:
+     code_folding: hide
+     df_print: paged
+     toc: true
+     toc_float:
+      collapsed: no
+      smooth_scroll: yes
+     number_sections: true
+     theme: darkly
+     highlight: tango
+subtitle: none
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      dev = 'png',
+                      fig.path = "figures/")
+```
+
+# Introduction
+
+Sander asked me to compare MCP-1 levels between plaque and plasma from our recent OLINK data.
+
+## Packages
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(ggpubr)
+```
+
+# Correlation between plaque and serum expression of MCP-1 protein
+
+## Data import
+```{r data_olink}
+# Clinical data
+load("~/SURFdrive/Zbook_mappen/Cardio/Athero-Express/RNAseq_Taxinomisis/Mapped/2019-12-20_bulk_RNAseq_data_to_share/myData_metadata_df.Rdata")
+
+# OLINK data
+df <- read_xlsx("~/SURFdrive/Zbook_mappen/Cardio/Athero-Express/OLINK/OLINK/data_analysis/results_AE_project_DKleijn___GPasterkamp_Dec2019.xlsx", sheet = 2, range = "A5:CQ98")
+
+df_plasma <- read_xlsx("~/SURFdrive/Zbook_mappen/Cardio/Athero-Express/OLINK/OLINK/data_analysis/results_AE_project_DKleijn___GPasterkamp_Dec2019.xlsx", sheet = 3, range = "A5:CQ98")
+```
+
+## Tidy
+
+### Plaque samples
+```{r tidy_names_plaque}
+names(df) %<>%
+     str_replace_all("\\s", "_") %>%     ## remove " " (space) from variable names, replace with "_"
+     str_replace_all("-", "")
+```
+
+```{r tidy_plaque}
+df <- df %>% 
+  dplyr::slice(-c(1:3, 92:93)) %>% 
+  dplyr::select(-Plate_ID) %>% 
+  filter(QC_Warning == "Pass") %>% 
+  dplyr::select(-QC_Warning) %>%
+  dplyr::rename(study_number = Assay) %>% 
+  mutate_at(vars(-study_number), as.numeric)
+
+df[1:6, 1:6]
+```
+
+### Plasma samples
+```{r tidy_names_plasma}
+names(df_plasma) %<>%
+     str_replace_all("\\s", "_") %>%     ## remove " " (space) from variable names, replace with "_"
+     str_replace_all("-", "")
+```
+
+```{r tidy_df_plasma}
+df_plasma <- df_plasma %>% 
+  dplyr::slice(-c(1:3, 92:93)) %>% 
+  dplyr::select(-Plate_ID) %>% 
+  filter(QC_Warning == "Pass") %>% 
+  dplyr::select(-QC_Warning) %>%
+  dplyr::rename(study_number = Assay) %>% 
+  mutate_at(vars(-study_number), as.numeric)
+
+df_plasma[1:6, 1:6]
+```
+
+## Select variables of interest
+```{r select_olink}
+df_sel <- df %>% 
+  dplyr::select(study_number, MCP1)
+
+df_plasma_sel <- df_plasma %>% 
+  dplyr::select(study_number, MCP1)
+
+df_sel <- df_sel %>% 
+  bind_rows(df_plasma_sel, .id = "source") %>% 
+  mutate(source = as.factor(source)) %>% 
+  mutate(source = recode(source, "1" = "Plaque", "2" = "Plasma"))
+
+head(df_sel)
+```
+
+
+## Distributions of MCP1
+
+**Figure 1: Histogram of the distribution of MCP-1 protein levels, in plaque and plasma**  
+```{r hist_olink}
+medians_vline <- df_sel %>% 
+  group_by(source) %>% 
+  summarise(median = median(MCP1, na.rm = TRUE))
+medians_vline
+
+df_sel %>% 
+  ggplot(aes(x = MCP1)) +
+  geom_histogram(colour = "black", fill = "black", alpha = 0.3) +
+  geom_rug(colour = "black", alpha = 0.3) +
+  geom_vline(data = medians_vline, aes(xintercept = median), colour = "red", linetype = 2) +
+  theme_pubr() +
+  xlab("MCP-1 level") +
+  # ylab("gene expression") +
+  facet_wrap(~source, scales = "free", ncol = 3)
+
+df_sel %>% 
+  ggplot(aes(x = MCP1)) +
+  geom_histogram(aes(colour = source, fill = source), alpha = 0.3) +
+  geom_rug(aes(colour = source), alpha = 0.3) +
+  geom_vline(data = medians_vline, aes(xintercept = median), colour = "black", linetype = 2) +
+  theme_pubr() +
+  xlab("MCP-1 level")
+```
+
+## MCP1 Plaque-Plasma correlation plot
+
+**Figure 2: Correlation scatter plot: plaque vs. plasma MCP-1 protein levels**  
+```{r corr_olink}
+df_sel_wide <- df_sel %>% 
+  pivot_wider(names_from = source, values_from = MCP1)
+
+df_sel_wide %>% 
+  ggplot(aes(x = Plaque, y = Plasma)) +
+  geom_point() +
+  theme_pubr() +
+  geom_smooth(method = "lm", color = "red", se = F) +
+  xlab("Plaque MCP-1 levels") +
+  ylab("Plasma MCP-1 levels")
+```
+
+### Statistical testing: Pearson's correlation
+We're calculating Pearson's correlation, since from the histograms it is not unreasonable to assume our variables are normally distributed. Additionally, we assume a linear relationship between the two variables.  
+```{r corr_test_olink}
+olink_corr_test <- cor.test(df_sel_wide$Plaque, df_sel_wide$Plasma)
+broom::tidy(olink_corr_test)
+```
+
+## MCP1 Plaque-Plasma correlation plot, case-control
+
+**Figure 3: Correlation scatter plot: plaque vs. plasma MCP-1 protein levels, per secondary event level**  
+```{r corr_olink_cc}
+df_sel_wide <- df_sel_wide %>% 
+  left_join(metadata %>% 
+              dplyr::select(study_number, epmajor_3years), by = "study_number") %>% 
+  mutate(epmajor_3years_cc = str_replace_all(epmajor_3years, c("Excluded" = "case", "Included" = "control")))
+
+df_sel_wide %>% 
+  ggplot(aes(x = Plaque, y = Plasma)) +
+  geom_point(aes(colour = epmajor_3years_cc)) +
+  geom_smooth(method = "lm", aes(color = epmajor_3years_cc), se = F) +
+  xlab("Plaque MCP-1 levels") +
+  ylab("Plasma MCP-1 levels") +
+  labs(colour = "Secondary events") +
+  theme_pubr()
+  
+```
+
+### Statistical testing: Pearson's correlation
+```{r corr_test_olink_cc}
+olink_corr_test_case <- cor.test(df_sel_wide$Plaque[df_sel_wide$epmajor_3years_cc == "case"], df_sel_wide$Plasma[df_sel_wide$epmajor_3years_cc == "case"])
+
+olink_corr_test_control <- cor.test(df_sel_wide$Plaque[df_sel_wide$epmajor_3years_cc == "control"], df_sel_wide$Plasma[df_sel_wide$epmajor_3years_cc == "control"])
+
+olink_corr_results <- broom::tidy(olink_corr_test_case) %>% 
+  bind_rows(broom::tidy(olink_corr_test_control), .id = "source") %>% 
+  mutate(source = as.factor(source)) %>% 
+  mutate(source = recode(source, "1" = "Case", "2" = "Control"))
+
+olink_corr_results
+```
