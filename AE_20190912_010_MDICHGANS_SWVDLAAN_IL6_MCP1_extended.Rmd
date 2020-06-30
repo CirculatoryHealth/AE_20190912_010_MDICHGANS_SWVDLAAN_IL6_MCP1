@@ -4863,12 +4863,33 @@ for (protein in 1:length(TRAITS.PROTEIN.RANK.extra)) {
 
 ```
 
+## Comparison sample types OLINK-platform
+
+We performed a pilot experiment comparing plasma and plaque-derived protein levels as measured using the OLINK platform.
+
+My colleague, Arjan Boltjes, analyzed this. Below some graphs and some statistics. 
+
+_estimate_:    -0.0004093809
+_statistic_:   -0.003774306
+_p.value_:     0.9969974
+_parameter_:   85
+_conf.low_:    -0.2110394
+_conf.high_:   0.210257	
+_method_:      Pearson's product-moment correlation	
+_alternative:_ two.sided
+
+**Figure 1: Distributions of plaque and plasma MCP1 levels.** Measured using the OLINK-platform (CVD-III panel). Pilot experiment with n = 88 samples. 
+![Distributions plaque and plasma MCP1 levels](plasma_vs_bulk_OLINK_MCP1/figures/hist_olink-2.png)
+
+**Figure 2: Comparison of plaque and plasma MCP1 levels.** Measured using the OLINK-platform (CVD-III panel). Pilot experiment with n = 88 samples. _AU_ = Arbitrary unit.
+![Comparing plaque and plasma MCP1 levels (AU)](plasma_vs_bulk_OLINK_MCP1/figures/corr_olink-1.png)
+
 
 # Session information
 
 ------
 
-    Version:      v1.0.10
+    Version:      v1.0.11
     Last update:  2020-06-30
     Written by:   Sander W. van der Laan (s.w.vanderlaan-2[at]umcutrecht.nl).
     Description:  Script to analyse MCP1 from the Ather-Express Biobank Study.
@@ -4898,6 +4919,7 @@ for (protein in 1:length(TRAITS.PROTEIN.RANK.extra)) {
     
     
     **Changes log**
+    * v1.0.11 Add analysis of pilot data comparing OLINK-platform based MCP1 levels in plasma and plaque.
     * v1.0.10 Add analyses for all three `MCP1`, `MCP1_pg_ml_2015`, and `MCP1_pg_ug_2015`. Add comparison between `MCP1`, `MCP1_pg_ml_2015`, and `MCP1_pg_ug_2015`. Add (and fixed) ordinal regression. Double checked which measurement to use. 
     * v1.0.9 Added linear regression models for MCP1 vs. cytokines plaque levels. Double checked upload of MACE-plots. Added statistics from correlation (heatmap) to txt-file.
     * v1.0.8 Fixed error in MCP1 plasma analysis. It turns out the `MCP1` and `MCP1_pg_ug_2015` variables are _both_ measured in plaque, in two separate experiments, exp. no. 1 and exp. no. 2, respectively. 
@@ -4907,8 +4929,8 @@ for (protein in 1:length(TRAITS.PROTEIN.RANK.extra)) {
     * v1.0.4 Updated with Cox-regressions.
     * v1.0.3 Included more models.
     * v1.0.2 Bugs fixed.
-    * v1.0.1 Extended with linear and logistic regressions
-    * v1.0.0 Inital version
+    * v1.0.1 Extended with linear and logistic regressions.
+    * v1.0.0 Inital version.
     
 
 ------
