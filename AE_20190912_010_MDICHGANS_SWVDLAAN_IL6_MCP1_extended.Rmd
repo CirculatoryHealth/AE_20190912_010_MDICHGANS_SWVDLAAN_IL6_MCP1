@@ -3952,6 +3952,1042 @@ ggpubr::ggboxplot(AEDB.CEA,
                   add = c("median_iqr", "jitter"))
 ```
 
+
+## Hypertension & blood pressure
+We want to create figures of MCP1 levels stratified by hypertension/blood pressure, and use of anti-hypertensive drugs. 
+
+- Box and Whisker plot for MCP-1 plaque levels by hypertension group (no, yes)
+- Box and Whisker plot for MCP-1 plasma levels by systolic blood pressure group (<120, 120-139, 140-159,160+)
+
+
+```{r BloodPressure}
+library(dplyr)
+
+AEDB.CEA <- AEDB.CEA %>% mutate(SBPGroup = factor(case_when(systolic < 120 ~ "<120",
+                                                     systolic >= 120  & systolic <= 139 ~ "120-139",
+                                                     systolic >= 140  & systolic <= 159 ~ "140-159",
+                                                     systolic >= 160 ~ "160+"))) 
+
+table(AEDB.CEA$SBPGroup, AEDB.CEA$Gender)
+
+```
+
+Now we can draw some graphs of plasma/plaque MCP1 levels per sex and hypertension/blood pressure group.
+
+### Inverse-rank transformed data
+
+#### MCP1 plaque levels
+
+```{r MCP1 per BloodPressure per Sex, ranked}
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(SBPGroup)), 
+                  x = c("SBPGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Systolic blood pressure (mmHg) per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(Hypertension.selfreport)), 
+                  x = c("Hypertension.selfreport"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Self-reported hypertension per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(Hypertension.selfreport) & !is.na(Hypertension.drugs)), 
+                  x = c("Hypertension.selfreport"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Self-reported hypertension per medication use",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Hypertension.drugs",
+                  palette = c("#49A01D", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+
+
+```
+
+#### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per BloodPressure per Sex, ranked plasma}
+
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("SBPGroup"),
+                  y = "MCP1_rank",
+                  xlab = "Systolic blood pressure (mmHg) per gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") 
+
+```
+
+### Raw data
+
+Simalarly but now for the raw data as median ± interquartile range.
+
+#### MCP1 plaque levels
+
+
+```{r MCP1 per BloodPressure per Sex}
+
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(SBPGroup)), 
+                  x = c("SBPGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Systolic blood pressure (mmHg) per gender",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(Hypertension.selfreport)), 
+                  x = c("Hypertension.selfreport"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Self-reported hypertension per gender",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(Hypertension.selfreport) & !is.na(Hypertension.drugs)), 
+                  x = c("Hypertension.selfreport"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Self-reported hypertension per medication use",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Hypertension.drugs",
+                  palette = c("#49A01D", "#1290D9"),
+                  add = "jitter") 
+```
+
+### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per BloodPressure per Sex, plasma}
+
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("SBPGroup"),
+                  y = "MCP1", 
+                  xlab = "Systolic blood pressure (mmHg) per gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
+
+
+## Hypercholesterolemia & LDL levels
+We want to create figures of MCP1 levels stratified by hypercholesterolemia/LDL-levels, and use of lipid-lowering drugs. 
+
+- Box and Whisker plot for MCP-1 plaque levels by hypercholesterolemia group (no, yes)
+- Box and Whisker plot for MCP-1 plasma levels by LDL-levels (mmol/L) group (<100, 100-129, 130-159, 160-189, 190+)
+
+```{r Hypercholesterolemia}
+library(dplyr)
+
+AEDB.CEA <- AEDB.CEA %>% mutate(LDLGroup = factor(case_when(LDL_finalCU < 100 ~ "<100",
+                                                     LDL_finalCU >= 100  & LDL_finalCU <= 129 ~ "100-129",
+                                                     LDL_finalCU >= 130  & LDL_finalCU <= 159 ~ "130-159",
+                                                     LDL_finalCU >= 160  & LDL_finalCU <= 189 ~ "160-189",
+                                                     LDL_finalCU >= 190 ~ "190+"))) 
+
+
+table(AEDB.CEA$LDLGroup, AEDB.CEA$Gender)
+
+
+```
+
+Now we can draw some graphs of plasma/plaque MCP1 levels per sex and hypercholesterolemia/LDL-levels group, as well as stratified by lipid-lowering drugs users.
+
+### Inverse-rank transformed data
+
+#### MCP1 plaque levels
+
+```{r MCP1 per Hypercholesterolemia per Sex, ranked}
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(LDLGroup)), 
+                  x = c("LDLGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "LDL (mg/dL) per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(LDLGroup) & !is.na(Med.Statin.LLD)), 
+                  x = c("LDLGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "LDL (mg/dL) per LLD use",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Med.Statin.LLD",
+                  palette = c("#49A01D", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+#### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per Hypercholesterolemia per Sex, ranked plasma}
+# compare_means(MCP1_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("Gender"),
+                  y = "MCP1_rank",
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("AgeGroup"),
+                  y = "MCP1_rank",
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+### Raw data
+
+Simalarly but now for the raw data as median ± interquartile range.
+
+#### MCP1 plaque levels
+
+
+```{r MCP1 per Hypercholesterolemia per Sex}
+
+# ?ggpubr::ggboxplot()
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(LDLGroup)), 
+                  x = c("LDLGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "LDL (mg/dL) per gender",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(LDLGroup) & !is.na(Med.Statin.LLD)), 
+                  x = c("LDLGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "LDL (mg/dL) per LLD use",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Med.Statin.LLD",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
+
+### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per Hypercholesterolemia per Sex, plasma}
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("Gender"),
+                  y = "MCP1", 
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("AgeGroup"),
+                  y = "MCP1", 
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
+
+
+## Kidney function (eGFR)
+We want to create figures of MCP1 levels stratified by kidney function. 
+
+- Box and Whisker plot for MCP-1 plaque levels by chronic kidney disease (CKD) group (1, 2, 3, 4, 5)
+- Box and Whisker plot for MCP-1 plasma levels by eGFR (MDRD-based) group (90+, 60-89, 30-59, <30)
+
+```{r EGFR}
+library(dplyr)
+
+AEDB.CEA <- AEDB.CEA %>% mutate(eGFRGroup = factor(case_when(GFR_MDRD < 15 ~ "<15",
+                                                             GFR_MDRD >= 15  & GFR_MDRD <= 29 ~ "15-29",
+                                                             GFR_MDRD >= 30  & GFR_MDRD <= 59 ~ "30-59",
+                                                             GFR_MDRD >= 60  & GFR_MDRD <= 89 ~ "60-89",
+                                                             GFR_MDRD >= 90 ~ "90+")))
+
+table(AEDB.CEA$eGFRGroup, AEDB.CEA$Gender)
+
+table(AEDB.CEA$eGFRGroup, AEDB.CEA$KDOQI)
+
+```
+
+Now we can draw some graphs of plasma/plaque MCP1 levels per sex and kidney function group.
+
+### Inverse-rank transformed data
+
+#### MCP1 plaque levels
+
+```{r MCP1 per EGFR per Sex, ranked}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(eGFRGroup)), 
+                  x = c("eGFRGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "eGFR (mL/min per 1.73 m2) per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+p1 <- ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(KDOQI)), 
+                  x = c("KDOQI"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Kidney function (KDOQI) per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+ggpar(p1 + rotate_x_text(45), legend = "right") 
+rm(p1)
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+p1 <- ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(eGFRGroup) & !is.na(KDOQI)), 
+                  x = c("eGFRGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "eGFR (mL/min per 1.73 m2) by KDOQI group",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "KDOQI",
+                  palette = "npg",
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+ggpar(p1, legend = "right")
+rm(p1)
+
+```
+
+#### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per EGFR per Sex, ranked plasma}
+# compare_means(MCP1_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("Gender"),
+                  y = "MCP1_rank",
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("AgeGroup"),
+                  y = "MCP1_rank",
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+### Raw data
+
+Simalarly but now for the raw data as median ± interquartile range.
+
+#### MCP1 plaque levels
+
+
+```{r MCP1 per EGFR per Sex}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(eGFRGroup)), 
+                  x = c("eGFRGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "eGFR (mL/min per 1.73 m2) per gender",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+p1 <- ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(KDOQI)), 
+                  x = c("KDOQI"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Kidney function (KDOQI) per gender",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+ggpar(p1 + rotate_x_text(45), legend = "right") 
+rm(p1)
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+p1 <- ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(eGFRGroup) & !is.na(KDOQI)), 
+                  x = c("eGFRGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "eGFR (mL/min per 1.73 m2) by KDOQI group",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "KDOQI",
+                  palette = "npg",
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+ggpar(p1, legend = "right")
+rm(p1)
+
+```
+
+### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per EGFR per Sex, plasma}
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("Gender"),
+                  y = "MCP1", 
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("AgeGroup"),
+                  y = "MCP1", 
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
+
+
+## BMI
+We want to create figures of MCP1 levels stratified by BMI. 
+
+- Box and Whisker plot for MCP-1 plaque levels by BMI WHO group (underweight, normal, overweight, obese)
+- Box and Whisker plot for MCP-1 plasma levels by BMI group (<18.5, 18.5-24.9, 25, 29.9, 30-24.9, 35+)
+
+```{r BMI}
+library(dplyr)
+
+AEDB.CEA <- AEDB.CEA %>% mutate(BMIGroup = factor(case_when(BMI < 18.5 ~ "<18.5",
+                                                     BMI >= 18.5  & BMI < 25 ~ "18.5-24",
+                                                     BMI >= 25  & BMI < 30 ~ "25-29",
+                                                     BMI >= 30  & BMI < 35 ~ "30-35",
+                                                     BMI >= 35 ~ "35+"))) 
+
+# require(labelled)
+# AEDB.CEA$BMI_US <- as_factor(AEDB.CEA$BMI_US)
+# AEDB.CEA$BMI_WHO <- as_factor(AEDB.CEA$BMI_WHO)
+# table(AEDB.CEA$BMI_WHO, AEDB.CEA$BMI_US)
+
+table(AEDB.CEA$BMIGroup, AEDB.CEA$Gender)
+table(AEDB.CEA$BMIGroup, AEDB.CEA$BMI_WHO)
+
+```
+
+Now we can draw some graphs of plasma/plaque MCP1 levels per sex and age group.
+
+### Inverse-rank transformed data
+
+#### MCP1 plaque levels
+
+```{r MCP1 per BMI per Sex, ranked}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(BMIGroup)), 
+                  x = c("BMIGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "BMI groups (kg/m2)",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  # color = "Gender",
+                  # palette = c("#D5267B", "#1290D9"),
+                  color = "#1290D9",
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(BMIGroup)), 
+                  x = c("BMIGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "BMI groups (kg/m2)",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+p1 <- ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(BMIGroup) & !is.na(BMI_WHO)), 
+                  x = c("AgeGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "BMI groups (kg/m2) per WHO categories",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "BMI_WHO",
+                  palette = "npg",
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+ggpar(p1, legend = "right")
+rm(p1)
+
+```
+
+#### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per BMI per Sex, ranked plasma}
+# compare_means(MCP1_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("Gender"),
+                  y = "MCP1_rank",
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("AgeGroup"),
+                  y = "MCP1_rank",
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+### Raw data
+
+Simalarly but now for the raw data as median ± interquartile range.
+
+#### MCP1 plaque levels
+
+
+```{r MCP1 per BMI per Sex}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(BMIGroup)), 
+                  x = c("BMIGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "BMI groups (kg/m2)",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  # color = "Gender",
+                  # palette = c("#D5267B", "#1290D9"),
+                  color = "#1290D9",
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(BMIGroup)), 
+                  x = c("BMIGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "BMI groups (kg/m2)",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+p1 <- ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(BMIGroup) & !is.na(BMI_WHO)), 
+                  x = c("AgeGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "BMI groups (kg/m2) per WHO categories",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "BMI_WHO",
+                  palette = "npg",
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+ggpar(p1, legend = "right")
+rm(p1)
+```
+
+### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per BMI per Sex, plasma}
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("Gender"),
+                  y = "MCP1", 
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("AgeGroup"),
+                  y = "MCP1", 
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
+
+
+## Diabetes
+We want to create figures of MCP1 levels stratified by type 2 diabetes. 
+
+- Box and Whisker plot for MCP-1 plaque levels by type 2 diabetes group (no, yes)
+
+Now we can draw some graphs of plasma/plaque MCP1 levels per sex and age group.
+
+### Inverse-rank transformed data
+
+#### MCP1 plaque levels
+
+```{r MCP1 per Diabetes per Sex, ranked}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(DiabetesStatus)), 
+                  x = c("DiabetesStatus"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Diabetes status",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  # color = "Gender",
+                  # palette = c("#D5267B", "#1290D9"),
+                  color = "#1290D9",
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(DiabetesStatus)), 
+                  x = c("DiabetesStatus"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Diabetes status per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+```
+
+#### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per Diabetes per Sex, ranked plasma}
+# compare_means(MCP1_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("Gender"),
+                  y = "MCP1_rank",
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("AgeGroup"),
+                  y = "MCP1_rank",
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+### Raw data
+
+Simalarly but now for the raw data as median ± interquartile range.
+
+#### MCP1 plaque levels
+
+
+```{r MCP1 per Diabetes per Sex}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015 ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(DiabetesStatus)), 
+                  x = c("DiabetesStatus"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Diabetes status",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  # color = "Gender",
+                  # palette = c("#D5267B", "#1290D9"),
+                  color = "#1290D9",
+                  add = c("median_iqr", "jitter")) #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015 ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(DiabetesStatus)), 
+                  x = c("DiabetesStatus"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Diabetes status per gender",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = c("median_iqr", "jitter")) #+
+  # stat_compare_means(method = "kruskal.test")
+
+
+```
+
+### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per Diabetes per Sex, plasma}
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("Gender"),
+                  y = "MCP1", 
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("AgeGroup"),
+                  y = "MCP1", 
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
+
+
+## Smoking
+We want to create figures of MCP1 levels stratified by smoking. 
+
+- Box and Whisker plot for MCP-1 plaque levels by smoking group (never, ex, current)
+
+Now we can draw some graphs of plasma/plaque MCP1 levels per sex and age group.
+
+### Inverse-rank transformed data
+
+#### MCP1 plaque levels
+
+```{r MCP1 per Smoking per Sex, ranked}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(SmokerStatus)), 
+                  x = c("SmokerStatus"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Smoker status",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  # color = "Gender",
+                  # palette = c("#D5267B", "#1290D9"),
+                  color = "#1290D9", 
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(SmokerStatus)), 
+                  x = c("SmokerStatus"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Smoker status per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+```
+
+#### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per Smoking per Sex, ranked plasma}
+# compare_means(MCP1_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("Gender"),
+                  y = "MCP1_rank",
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("AgeGroup"),
+                  y = "MCP1_rank",
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+### Raw data
+
+Simalarly but now for the raw data as median ± interquartile range.
+
+#### MCP1 plaque levels
+
+
+```{r MCP1 per Smoking per Sex}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015 ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(SmokerStatus)), 
+                  x = c("SmokerStatus"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Smoker status",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  # color = "Gender",
+                  # palette = c("#D5267B", "#1290D9"),
+                  color = "#1290D9", 
+                  add = c("median_iqr", "jitter")) #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015 ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(SmokerStatus)), 
+                  x = c("SmokerStatus"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Smoker status per gender",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = c("median_iqr", "jitter")) #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per Smoking per Sex, plasma}
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("Gender"),
+                  y = "MCP1", 
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("AgeGroup"),
+                  y = "MCP1", 
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
+
+
+## Stenosis
+We want to create figures of MCP1 levels stratified by stenosis grade. 
+
+- Box and Whisker plot for MCP-1 plaque levels by stenosis grade group (<70, 70-89, 90+)
+
+```{r Stenosis}
+library(dplyr)
+
+AEDB.CEA <- AEDB.CEA %>% mutate(StenoticGroup = factor(case_when(stenose == "0-49%" ~ "<70",
+                                                     stenose == "0-49%" ~ "<70",
+                                                     stenose == "50-70%" ~ "<70",
+                                                     stenose == "70-90%" ~ "70-89",
+                                                     stenose == "50-99%" ~ "90+",
+                                                     stenose == "70-99%" ~ "90+",
+                                                     stenose == "100% (Occlusion)" ~ "90+",
+                                                     stenose == "90-99%" ~ "90+")))
+
+table(AEDB.CEA$StenoticGroup, AEDB.CEA$Gender)
+table(AEDB.CEA$stenose, AEDB.CEA$StenoticGroup)
+
+```
+
+Now we can draw some graphs of plasma/plaque MCP1 levels per sex and age group.
+
+### Inverse-rank transformed data
+
+#### MCP1 plaque levels
+
+```{r MCP1 per Stenosis per Sex, ranked}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(StenoticGroup)), 
+                  x = c("StenoticGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Stenotic grade",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  # color = "Gender",
+                  # palette = c("#D5267B", "#1290D9"),
+                  color = "#1290D9",
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(StenoticGroup)), 
+                  x = c("StenoticGroup"),
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Stenotic grade per gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+#### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per Stenosis per Sex, ranked plasma}
+# compare_means(MCP1_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("Gender"),
+                  y = "MCP1_rank",
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA,
+                  x = c("AgeGroup"),
+                  y = "MCP1_rank",
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]\n(inverse-rank transformation)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+```
+
+### Raw data
+
+Simalarly but now for the raw data as median ± interquartile range.
+
+#### MCP1 plaque levels
+
+
+```{r MCP1 per Stenosis per Sex}
+
+# Global test
+# compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(StenoticGroup)), 
+                  x = c("StenoticGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Stenotic grade",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  # color = "Gender",
+                  # palette = c("#D5267B", "#1290D9"),
+                  color = "#1290D9",
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+
+# compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
+ggpubr::ggboxplot(AEDB.CEA %>% filter(!is.na(StenoticGroup)), 
+                  x = c("StenoticGroup"),
+                  y = "MCP1_pg_ug_2015", 
+                  xlab = "Stenotic grade per gender",
+                  ylab = "MCP1 plaque [pg/ug]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "kruskal.test")
+
+
+```
+
+### MCP1 plasma levels
+
+> NOT AVAILABLE YET
+
+```{r MCP1 per Stenosis per Sex, plasma}
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("Gender"),
+                  y = "MCP1", 
+                  xlab = "Gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+
+ggpubr::ggboxplot(AEDB.CEA, 
+                  x = c("AgeGroup"),
+                  y = "MCP1", 
+                  xlab = "Age groups (years) per gender",
+                  ylab = "MCP1 plasma [pg/mL]",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  # add = "median_iqr")
+                  add = c("median_iqr", "jitter"))
+```
+
+
+
 ## Circulating vs. plaque MCP1 levels
 
 We will also make a nice correlation plot between plasma and plaque MCP1 levels.
@@ -4889,8 +5925,8 @@ _alternative:_ two.sided
 
 ------
 
-    Version:      v1.0.11
-    Last update:  2020-06-30
+    Version:      v1.0.12
+    Last update:  2020-07-06
     Written by:   Sander W. van der Laan (s.w.vanderlaan-2[at]umcutrecht.nl).
     Description:  Script to analyse MCP1 from the Ather-Express Biobank Study.
     Minimum requirements: R version 3.5.2 (2018-12-20) -- 'Eggshell Igloo', macOS Mojave (10.14.2).
@@ -4899,7 +5935,7 @@ _alternative:_ two.sided
     The things we Must, Should, Could, and Would have given the time we have.
     _M_
     * ASAP - analysis on plasma based on OLINK platform
-    * ASAP - analysis on the pilot dataset on the OLINK platform, comparing plasma vs. plaque
+    * DONE - analysis on the pilot dataset on the OLINK platform, comparing plasma vs. plaque
     * DONE - linear regression models (model 1 and model 2) of `MCP1_pg_ug_2015` with cytokines
     * DONE - check out the difference between the measuremens of `MCP1` and `MCP1_pg_ug_2015` > `MCP1_pg_ug_2015` and `MCP1_pg_ml_2015` give similar results, `MCP1_pg_ug_2015` is more correct as this is corrected for the total amount of protein in the protein-sample used for the measurement. 
     * DONE - double check the plotting of the MACE
@@ -4908,6 +5944,7 @@ _alternative:_ two.sided
     * DONE - analysis in the context of year of surgery given Van Lammeren _et al._ 
     * DONE - add analysis on vulnerability index
     * DONE - add analysis on binary and ordinal plaque phenotypes
+    * DONE - add boxplots of MCP1 levels stratified by confounders/variables
     
     _S_
     * DONE prettify forest plot
@@ -4919,6 +5956,7 @@ _alternative:_ two.sided
     
     
     **Changes log**
+    * v1.0.12 Add boxplots of MCP1 levels stratified by confounder/variables.
     * v1.0.11 Add analysis of pilot data comparing OLINK-platform based MCP1 levels in plasma and plaque.
     * v1.0.10 Add analyses for all three `MCP1`, `MCP1_pg_ml_2015`, and `MCP1_pg_ug_2015`. Add comparison between `MCP1`, `MCP1_pg_ml_2015`, and `MCP1_pg_ug_2015`. Add (and fixed) ordinal regression. Double checked which measurement to use. 
     * v1.0.9 Added linear regression models for MCP1 vs. cytokines plaque levels. Double checked upload of MACE-plots. Added statistics from correlation (heatmap) to txt-file.
