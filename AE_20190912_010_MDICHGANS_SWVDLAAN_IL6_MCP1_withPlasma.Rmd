@@ -5661,7 +5661,6 @@ ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plaque_vs_plasma.rank.p
 ## Symptoms
 We want to create per-symptom figures. 
 
-
 ```{r SymptomGroups}
 library(dplyr)
 
@@ -5694,6 +5693,25 @@ ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plaque.AsymptSympt2G.pd
 
 rm(p1)
 
+my_comparisons <- list(c("Asymptomatic", "Symptomatic"))
+
+p1 <- ggpubr::ggboxplot(AEDB.CEA, 
+                  x = "AsymptSympt2G", y = "MCP1_pg_ug_2015_rank",
+                  title = "MCP1 plaque [pg/ug] levels per symptom by gender", 
+                  xlab = "Symptoms",
+                  ylab = "MCP1 plaque [pg/ug]\n inverse-rank transformation",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "dotplot", # Add dotplot
+                  add.params = list(binwidth = 0.1, dotsize = 0.3)
+          ) +
+  stat_compare_means(comparisons = my_comparisons, method = "wilcox.test")
+ggpar(p1, legend = c("right"), legend.title = "Symptoms")
+
+ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plaque.AsymptSympt2G.byGender.pdf"), plot = last_plot())
+
+rm(p1)
+
 ```
 
 ```{r MCP1 per SymptomGroups, plasma}
@@ -5710,7 +5728,24 @@ p1 <- ggpubr::ggboxplot(AEDB.CEA,
   stat_compare_means(comparisons = my_comparisons, method = "wilcox.test")
 ggpar(p1 + rotate_x_text(45), legend = c("right"), legend.title = "Symptoms")
 
-ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plasma.AsymptSympt2G.pdf"), plot = last_plot())
+ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plasma.Symptoms5G.pdf"), plot = last_plot())
+
+rm(p1)
+
+p1 <- ggpubr::ggboxplot(AEDB.CEA, 
+                  x = "Symptoms.5G", y = "MCP1_plasma_olink_rank",
+                  title = "MCP1 plasma [AU] levels per symptom by gender", 
+                  xlab = "Symptoms",
+                  ylab = "MCP1 plasma [AU]\n inverse-rank transformation",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "dotplot", # Add dotplot
+                  add.params = list(binwidth = 0.1, dotsize = 0.3)
+          ) +
+  stat_compare_means(comparisons = my_comparisons, method = "wilcox.test")
+ggpar(p1 + rotate_x_text(45), legend = c("right"), legend.title = "Symptoms")
+
+ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plasma.Symptoms5G.byGender.pdf"), plot = last_plot())
 
 rm(p1)
 
@@ -6375,6 +6410,10 @@ table(AEDB.CEA$ORyearGroup, AEDB.CEA$ORdate_year)
 
 ### MCP1 plaque levels vs. plaque vulnerability index
 
+1. Could you please also provide the figure showing MCP1 levels by symptomatic/asymptomatic plaque, separated in men and women and with the same color code like the other ones (e.g. like the one by age)? 
+2. Similarly, I would like to see a figure with the MCP1 levels (again by sex) across the values of the vulnerability index score (0,1,2,3,4,5).  By the way this analysis came up very nicely!!
+
+
 ```{r MCP1 per PlaqueVulnerabilityIndex}
 # Global test
 # compare_means(MCP1_pg_ug_2015_rank ~ Gender,  data = AEDB.CEA, method = "wilcox.test")
@@ -6389,6 +6428,18 @@ p1 <- ggpubr::ggboxplot(AEDB.CEA,
   # stat_compare_means(method = "wilcox.test")
 ggpar(p1, legend = "bottom", legend.title = "Plaque vulnerability index")
 ggsave(filename = paste0(PLOT_loc, "/", Today, ".MCP1.plaque.exp2_pgug.PlaqueVulnerabilityIndex.pdf"), plot = last_plot())
+
+p1 <- ggpubr::ggboxplot(AEDB.CEA, 
+                  x = "Plaque_Vulnerability_Index",
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Plaque vulnerability index by gender",
+                  ylab = "MCP1 plaque [pg/ug]\n(INT, exp 2)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+ggpar(p1, legend = "bottom", legend.title = "Plaque vulnerability index")
+ggsave(filename = paste0(PLOT_loc, "/", Today, ".MCP1.plaque.exp2_pgug.PlaqueVulnerabilityIndex.byGender.pdf"), plot = last_plot())
 
 # compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
 p2 <- ggpubr::ggboxplot(AEDB.CEA, 
@@ -6428,6 +6479,19 @@ p1 <- ggpubr::ggboxplot(AEDB.CEA,
   # stat_compare_means(method = "wilcox.test")
 ggpar(p1, legend = "bottom", legend.title = "Plaque vulnerability index")
 ggsave(filename = paste0(PLOT_loc, "/", Today, ".MCP1.plaque.exp2_pgug.PlaqueVulnerabilityIndex_Facet_byYear.pdf"), plot = last_plot())
+
+p1 <- ggpubr::ggboxplot(AEDB.CEA, 
+                  x = "Plaque_Vulnerability_Index",
+                  y = "MCP1_pg_ug_2015_rank", 
+                  xlab = "Plaque vulnerability index",
+                  ylab = "MCP1 plaque [pg/ug]\n(INT, exp 2)",
+                  color = "Gender",
+                  palette = c("#D5267B", "#1290D9"),
+                  facet.by = "ORyearGroup",
+                  add = "jitter") #+
+  # stat_compare_means(method = "wilcox.test")
+ggpar(p1, legend = "bottom", legend.title = "Plaque vulnerability index")
+ggsave(filename = paste0(PLOT_loc, "/", Today, ".MCP1.plaque.exp2_pgug.PlaqueVulnerabilityIndex_Facet_byYear.byGender.pdf"), plot = last_plot())
 
 # compare_means(MCP1_pg_ug_2015_rank ~ AgeGroup,  data = AEDB.CEA, method = "kruskal.test")
 p2 <- ggpubr::ggboxplot(AEDB.CEA, 
@@ -6604,6 +6668,8 @@ for (protein in 1:length(TRAITS.PROTEIN.RANK.extra)) {
 
 ```
 
+
+
 ## Comparison sample types OLINK-platform
 
 We performed a pilot experiment comparing plasma and plaque-derived protein levels as measured using the OLINK platform.
@@ -6630,8 +6696,8 @@ _alternative:_ two.sided
 
 ------
 
-    Version:      v1.0.13
-    Last update:  2020-07-07
+    Version:      v1.0.15
+    Last update:  2020-07-10
     Written by:   Sander W. van der Laan (s.w.vanderlaan-2[at]umcutrecht.nl).
     Description:  Script to analyse MCP1 from the Ather-Express Biobank Study.
     Minimum requirements: R version 3.5.2 (2018-12-20) -- 'Eggshell Igloo', macOS Mojave (10.14.2).
@@ -6661,6 +6727,7 @@ _alternative:_ two.sided
     
     
     **Changes log**
+    * v1.0.15 Add sex-stratified plots for MCP1 plaque levels by symptoms and plaque vulnerability index.
     * v1.0.14 Add analysis on plasma based MCP1 levels measured through OLINK, n ± 700, limited to symptomatic patients only.
     * v1.0.13 Splitting RMDs into plaque-focused, and one including plasma levels of MCP1.
     * v1.0.12 Add boxplots of MCP1 levels stratified by confounder/variables.
