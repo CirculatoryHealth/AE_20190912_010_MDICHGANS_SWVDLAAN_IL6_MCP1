@@ -4770,15 +4770,16 @@ Now we can draw some graphs of plaque MCP1 levels per symptom group.
 # ?ggpubr::ggboxplot()
 my_comparisons <- list(c("Asymptomatic", "Symptomatic"))
 
-p1 <- ggpubr::ggboxplot(AEDB.CEA, 
+p1 <- ggpubr::ggdotplot(AEDB.CEA, 
                   x = "AsymptSympt2G", y = "MCP1_pg_ml_2015_rank",
                   title = "MCP1 plaque [pg/mL] levels per symptom", 
                   xlab = "Symptoms",
                   ylab = "MCP1 plaque [pg/mL]\n inverse-rank transformation",
-                  color = "AsymptSympt2G", 
+                  color = "AsymptSympt2G", fill = "AsymptSympt2G",
                   # palette = c(uithof_color[16], uithof_color[23]),
                   palette = "npg",
-                  add = "dotplot", # Add dotplot
+                  size = 0.25,
+                  add = "boxplot", # Add dotplot
                   add.params = list(binwidth = 0.1, dotsize = 0.3)
           ) +
   stat_compare_means(comparisons = my_comparisons, method = "wilcox.test")
@@ -4789,20 +4790,58 @@ ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plaque.AsymptSympt2G.pd
 rm(p1)
 
 compare_means(MCP1_pg_ml_2015_rank ~ AsymptSympt2G, group.by = "Gender", data = AEDB.CEA, method = "kruskal.test")
-p1 <- ggpubr::ggboxplot(AEDB.CEA, 
+p1 <- ggpubr::ggdotplot(AEDB.CEA, 
                   x = "AsymptSympt2G", y = "MCP1_pg_ml_2015_rank",
                   title = "MCP1 plaque [pg/mL] levels per symptom by gender", 
                   xlab = "Symptoms",
                   ylab = "MCP1 plaque [pg/mL]\n inverse-rank transformation",
-                  color = "Gender",
+                  color = "Gender", fill = "Gender",
                   palette = c("#D5267B", "#1290D9"),
-                  add = "dotplot", # Add dotplot
+                  size = 0.15,
+                  add = "boxplot", # Add dotplot
                   add.params = list(binwidth = 0.1, dotsize = 0.3)
           ) +
   stat_compare_means(aes(group = Gender), label = "p.format",  method = "wilcox.test")
 ggpar(p1, legend = c("right"), legend.title = "Symptoms")
 
 ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plaque.AsymptSympt2G.byGender.pdf"), plot = last_plot())
+
+rm(p1)
+
+# regular boxplots
+p1 <- ggpubr::ggboxplot(AEDB.CEA, 
+                  x = "AsymptSympt2G", y = "MCP1_pg_ml_2015_rank",
+                  title = "MCP1 plaque [pg/mL] levels per symptom", 
+                  xlab = "Symptoms",
+                  ylab = "MCP1 plaque [pg/mL]\n inverse-rank transformation",
+                  color = "AsymptSympt2G", 
+                  # palette = c(uithof_color[16], uithof_color[23]),
+                  palette = "npg",
+                  add = "jitter", 
+                  add.params = list(binwidth = 0.1, dotsize = 0.3)
+          ) +
+  stat_compare_means(comparisons = my_comparisons, method = "wilcox.test")
+ggpar(p1, legend = c("right"), legend.title = "Symptoms")
+
+ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plaque.AsymptSympt2G.regBoxPlot.pdf"), plot = last_plot())
+
+rm(p1)
+
+compare_means(MCP1_pg_ml_2015_rank ~ AsymptSympt2G, group.by = "Gender", data = AEDB.CEA, method = "kruskal.test")
+p1 <- ggpubr::ggboxplot(AEDB.CEA, 
+                  x = "AsymptSympt2G", y = "MCP1_pg_ml_2015_rank",
+                  title = "MCP1 plaque [pg/mL] levels per symptom by gender", 
+                  xlab = "Symptoms",
+                  ylab = "MCP1 plaque [pg/mL]\n inverse-rank transformation",
+                  color = "Gender", 
+                  palette = c("#D5267B", "#1290D9"),
+                  add = "jitter", 
+                  add.params = list(binwidth = 0.1, dotsize = 0.3)
+          ) +
+  stat_compare_means(aes(group = Gender), label = "p.format",  method = "wilcox.test")
+ggpar(p1, legend = c("right"), legend.title = "Symptoms")
+
+ggsave(file = paste0(PLOT_loc, "/",Today,".AEDB.CEA.MCP1.plaque.AsymptSympt2G.byGender.regBoxPlot.pdf"), plot = last_plot())
 
 rm(p1)
 
@@ -5744,8 +5783,8 @@ for (protein in 1:length(TRAITS.PROTEIN.RANK.extra)) {
 
 ------
 
-    Version:      v1.0.17
-    Last update:  2020-07-14
+    Version:      v1.0.18
+    Last update:  2020-09-03
     Written by:   Sander W. van der Laan (s.w.vanderlaan-2[at]umcutrecht.nl).
     Description:  Script to analyse MCP1 from the Ather-Express Biobank Study.
     Minimum requirements: R version 3.5.2 (2018-12-20) -- 'Eggshell Igloo', macOS Mojave (10.14.2).
@@ -5763,6 +5802,7 @@ for (protein in 1:length(TRAITS.PROTEIN.RANK.extra)) {
     
     
     **Changes log**
+    * v1.0.18 Changed 'asymptomatic vs. symptomatic' DotPlot to have dots instead of lines. Added boxplot for the same.
     * v1.0.17 Added regular, and per gender boxplots for risk factors, _etc_. Changed coloring for consistency. 
     * v1.0.16 Create a pg/mL-only version. Switched to a new `.RMD`, but kept versioning.
     * v1.0.15 Add sex-stratified plots for MCP1 plaque levels by symptoms and plaque vulnerability index.
