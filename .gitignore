@@ -7,3 +7,6 @@
 *.vcf.gz*
 *.vcf*
 .Rproj.user
+_archived/*
+.DS_Store
+.Rhistory
