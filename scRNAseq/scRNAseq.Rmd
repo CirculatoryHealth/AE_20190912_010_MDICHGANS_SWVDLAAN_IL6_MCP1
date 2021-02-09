@@ -1,5 +1,5 @@
 ---
-title: "Mapping MCP1, IL6, and IL6R with single-cell resolution in carotid plaques."
+title: "Mapping MCP1 (CCL2) with single-cell resolution in carotid plaques."
 author: '[Sander W. van der Laan, PhD](https://swvanderlaan.github.io) | @swvanderlaan'
 date: '`r Sys.Date()`'
 output:
@@ -32,7 +32,7 @@ knitr::opts_chunk$set(fig.width = 12, fig.height = 8, fig.path = 'Figures/',
 
 _Clean the environment._
 ```{r ClearEnvironment, echo = FALSE}
-rm(list = ls())
+# rm(list = ls())
 ```
 
 _Set locations, and the working directory ..._
@@ -42,8 +42,12 @@ _Set locations, and the working directory ..._
 # ROOT_loc = "/Volumes/EliteProQx2Media"
 # GENOMIC_loc = "/Users/svanderlaan/iCloud/Genomics"
 
-### MacBook
-ROOT_loc = "/Users/swvanderlaan"
+### MacBook Pro
+# ROOT_loc = "/Users/swvanderlaan"
+# GENOMIC_loc = paste0(ROOT_loc, "/iCloud/Genomics")
+
+### MacBook Air
+ROOT_loc = "/Users/slaan3"
 GENOMIC_loc = paste0(ROOT_loc, "/iCloud/Genomics")
 
 ### Generic Locations
@@ -119,7 +123,7 @@ install.packages.auto <- function(x) {
 ```
 
 _... and load those packages._
-```{r Setting: loading_packages, echo=FALSE}
+```{r Setting: loading_packages, echo=FALSE, message=FALSE, warning=FALSE}
 install.packages.auto("readr")
 install.packages.auto("optparse")
 install.packages.auto("tools")
@@ -159,8 +163,8 @@ library("Seurat")
 _We will create a datestamp and define the Utrecht Science Park Colour Scheme_.
 ```{r Setting: Colors, echo=FALSE}
 
-Today = format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d")
-Today.Report = format(as.Date(as.POSIXlt(Sys.time())), "%A, %B %d, %Y")
+# Today = format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d")
+# Today.Report = format(as.Date(as.POSIXlt(Sys.time())), "%A, %B %d, %Y")
 
 ### UtrechtScienceParkColoursScheme
 ###
@@ -269,6 +273,7 @@ Here we load the latest dataset from our Athero-Express Single Cell RNA experime
 
 scRNAseqData <- readRDS(paste0(RAWDATA, "/Seuset_40_patients/Seuset_40_patients.RDS"))
 scRNAseqData
+N_GENES=18283
 
 ```
 
@@ -358,7 +363,7 @@ We will group as follows:
 6. Other > 5, 9, 10, 12, 16, 17
 
 
-```{r FixSymptoms}
+```{r FixSymptoms, message=FALSE, warning=FALSE}
 
 # Fix symptoms
 
@@ -419,7 +424,7 @@ Coding of symptoms is as follows:
 - atheromatous	3	
 
 
-```{r FixPlaquePhenotypes}
+```{r FixPlaquePhenotypes, message=FALSE, warning=FALSE}
 
 # Fix plaquephenotypes
 attach(AEDB)
@@ -445,7 +450,7 @@ detach(AEDB)
 
 We will also fix the _diabetes_ status variable.
 
-```{r FixDiabetes}
+```{r FixDiabetes, message=FALSE, warning=FALSE}
 
 # Fix diabetes
 attach(AEDB)
@@ -482,7 +487,7 @@ We already have some variables indicating smoking status:
 
 
 
-```{r FixSmoking}
+```{r FixSmoking, message=FALSE, warning=FALSE}
 require(labelled)
 AEDB$diet801 <- to_factor(AEDB$diet801)
 AEDB$diet802 <- to_factor(AEDB$diet802)
@@ -544,7 +549,7 @@ table(AEDB$SmokerStatus, AEDB$SmokerCurrent,
 We will also fix the _alcohol_ status variable.
 
 
-```{r FixAlcohol}
+```{r FixAlcohol, message=FALSE, warning=FALSE}
 
 # Fix diabetes
 attach(AEDB)
@@ -598,7 +603,6 @@ We are interested in the following variables at baseline.
   - Stroke
 - eGFR (mL/min/1.73 m²)
 - MCP-1 plaque levels (pg/mL)
-- MCP-1 serum levels (pg/mL)
 
 ```{r Baseline AEDB: preparation}
 cat("====================================================================================================\n")
@@ -1061,28 +1065,29 @@ VlnPlot(scRNAseqData, features = TARGET_B) +
 ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_B,".png"), plot = last_plot())
 ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_B,".ps"), plot = last_plot())
 
-VlnPlot(scRNAseqData, features = TARGET_C) + 
-  xlab("cell communities") + 
-  ylab(bquote("normalized "~italic(IL6)~" expression")) +
-  theme(
-    axis.title.x = element_text(color = "#000000", size = 14, face = "bold"),
-    axis.title.y = element_text(color = "#000000", size = 14, face = "bold"), 
-    legend.position = "none")
-ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_C,".png"), plot = last_plot())
-ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_C,".ps"), plot = last_plot())
-
-VlnPlot(scRNAseqData, features = TARGET_D) + 
-  xlab("cell communities") + 
-  ylab(bquote("normalized "~italic(IL6R)~" expression")) +
-  theme(
-    axis.title.x = element_text(color = "#000000", size = 14, face = "bold"),
-    axis.title.y = element_text(color = "#000000", size = 14, face = "bold"), 
-    legend.position = "none")
-ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_D,".png"), plot = last_plot())
-ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_D,".ps"), plot = last_plot())
+# VlnPlot(scRNAseqData, features = TARGET_C) + 
+#   xlab("cell communities") + 
+#   ylab(bquote("normalized "~italic(IL6)~" expression")) +
+#   theme(
+#     axis.title.x = element_text(color = "#000000", size = 14, face = "bold"),
+#     axis.title.y = element_text(color = "#000000", size = 14, face = "bold"), 
+#     legend.position = "none")
+# ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_C,".png"), plot = last_plot())
+# ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_C,".ps"), plot = last_plot())
+# 
+# VlnPlot(scRNAseqData, features = TARGET_D) + 
+#   xlab("cell communities") + 
+#   ylab(bquote("normalized "~italic(IL6R)~" expression")) +
+#   theme(
+#     axis.title.x = element_text(color = "#000000", size = 14, face = "bold"),
+#     axis.title.y = element_text(color = "#000000", size = 14, face = "bold"), 
+#     legend.position = "none")
+# ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_D,".png"), plot = last_plot())
+# ggsave(paste0(PLOT_loc, "/", Today, ".VlnPlot.",TARGET_D,".ps"), plot = last_plot())
 
 # GenesOfInterest_TargetsA <- c("CCL2", "CCR2", "IL6", "IL6R", "ACTA2", "MYH11", "CD34", "CD14", "CD68", "CD3E", "CD4")
-GenesOfInterest_TargetsA <- c("CCL2", "CCR2", "IL6", "IL6R")
+# GenesOfInterest_TargetsA <- c("CCL2", "CCR2", "IL6", "IL6R")
+GenesOfInterest_TargetsA <- c("CCL2", "CCR2")
 
 library(RColorBrewer)
 
@@ -1125,14 +1130,14 @@ FeaturePlot(scRNAseqData, features = c(TARGET_B, "CD79A"),
             # combine = TRUE, 
             blend = TRUE)
 
-FeaturePlot(scRNAseqData, features = c(TARGET_D, "CD79A"), 
-            # cols = c("#ECECEC", "#DB003F", "#9A3480","#1290D9"),
-            # combine = TRUE, 
-            blend = TRUE)
-FeaturePlot(scRNAseqData, features = c(TARGET_D, "CD79A"), 
-            # cols = c("#ECECEC", "#DB003F", "#9A3480","#1290D9"),
-            # combine = TRUE, 
-            blend = TRUE)
+# FeaturePlot(scRNAseqData, features = c(TARGET_D, "CD79A"), 
+#             # cols = c("#ECECEC", "#DB003F", "#9A3480","#1290D9"),
+#             # combine = TRUE, 
+#             blend = TRUE)
+# FeaturePlot(scRNAseqData, features = c(TARGET_D, "CD79A"), 
+#             # cols = c("#ECECEC", "#DB003F", "#9A3480","#1290D9"),
+#             # combine = TRUE, 
+#             blend = TRUE)
 
 FeaturePlot(scRNAseqData, features = c(GenesOfInterest_TargetsA), 
             cols =  c("#ECECEC", "#DB003F", "#9A3480","#1290D9"), 
@@ -1144,8 +1149,8 @@ ggsave(paste0(PLOT_loc, "/", Today, ".FeaturePlot.Targets.ps"), plot = last_plot
 
 FeaturePlot(scRNAseqData, features = c(TARGET_A_alt), cols =  c("#ECECEC", "#DB003F"))
 FeaturePlot(scRNAseqData, features = c(TARGET_B), cols =  c("#ECECEC", "#DB003F"))
-FeaturePlot(scRNAseqData, features = c(TARGET_C), cols =  c("#ECECEC", "#DB003F"))
-FeaturePlot(scRNAseqData, features = c(TARGET_D), cols =  c("#ECECEC", "#DB003F"))
+# FeaturePlot(scRNAseqData, features = c(TARGET_C), cols =  c("#ECECEC", "#DB003F"))
+# FeaturePlot(scRNAseqData, features = c(TARGET_D), cols =  c("#ECECEC", "#DB003F"))
 
 ```
 
@@ -1179,10 +1184,9 @@ MAC.markers <- FindMarkers(object = scRNAseqData,
                                       "CD79A+ B II"))
 
 DT::datatable(MAC.markers)
-
 MAC_Volcano_TargetsA = EnhancedVolcano(MAC.markers,
     lab = rownames(MAC.markers),
-    x = "avg_logFC",
+    x = "avg_log2FC",
     y = "p_val_adj",
     selectLab = GenesOfInterest_TargetsA,
     axisLabSize = 12,
@@ -1191,9 +1195,9 @@ MAC_Volcano_TargetsA = EnhancedVolcano(MAC.markers,
     titleLabSize = 14,
     pCutoff = 0.05/N_GENES, # 20552 genes
     FCcutoff = 1.25,
-    transcriptPointSize = 1.5,
-    transcriptLabSize = 3.0,
-    legend=c('NS','avg. fold-change','P',
+    pointSize = 1.5,
+    labSize = 3.0,
+    legendLabels = c('NS','avg. fold-change','P',
       'P & avg. fold-change'),
     legendPosition = "right",
     legendLabSize = 10,
@@ -1203,6 +1207,7 @@ MAC_Volcano_TargetsA = EnhancedVolcano(MAC.markers,
     colConnectors = "#595A5C",
     gridlines.major = FALSE,
     gridlines.minor = FALSE)
+
 MAC_Volcano_TargetsA
 ggsave(paste0(PLOT_loc, "/", Today, ".Volcano.MAC.DEG.Targets.pdf"), 
        plot = MAC_Volcano_TargetsA)
@@ -1212,7 +1217,8 @@ On average _FTL_, _LYZ_, _HLA-DRA_, _IFI30_, and _TCSB_ among others have a high
 
 Below the results for the `TARGET_GENES`.
 ```{r results MACs}
-temp = subset(MAC.markers, (rownames(MAC.markers)=="CCL2" | rownames(MAC.markers)=="CCR2" | rownames(MAC.markers)=="IL6" | rownames(MAC.markers)=="IL6R"))
+# temp = subset(MAC.markers, (rownames(MAC.markers)=="CCL2" | rownames(MAC.markers)=="CCR2" | rownames(MAC.markers)=="IL6" | rownames(MAC.markers)=="IL6R"))
+temp = subset(MAC.markers, (rownames(MAC.markers)=="CCL2" | rownames(MAC.markers)=="CCR2"))
 DT::datatable(temp)
 rm(temp)
 ```
@@ -1226,7 +1232,7 @@ head(MAC.markers)
 
 fwrite(MAC.markers, file = paste0(OUT_loc,"/",Today,".MAC.markers.txt.gz"),
        quote = FALSE, sep = "\t", na ="", dec = ".",
-       showProgress = TRUE, verbose = TRUE,
+       showProgress = TRUE, verbose = FALSE,
        compress = c("gzip"))
 ```
 
@@ -1235,13 +1241,14 @@ fwrite(MAC.markers, file = paste0(OUT_loc,"/",Today,".MAC.markers.txt.gz"),
 
 ------
 
-    Version:      v1.0.0
-    Last update:  2020-06-12
+    Version:      v1.0.1
+    Last update:  2021-02-09
     Written by:   Sander W. van der Laan (s.w.vanderlaan-2[at]umcutrecht.nl).
     Description:  Script to load single-cell RNA sequencing (scRNAseq) data, and perform quality control (QC), and initial mapping to cells.
     Minimum requirements: R version 3.5.2 (2018-12-20) -- 'Eggshell Igloo', macOS Mojave (10.14.2).
     
     Change log
+    * v1.0.1 Update to reviewer comments and changes in EnhancedVolcano.
     * v1.0.0 Initial version
 
 ------
@@ -1256,6 +1263,6 @@ save.image(paste0(PROJECT_loc, "/",Today,".",PROJECTNAME,".scrnaseq_results.RDat
 ```
 
 ------
-<sup>&copy; 1979-2020 Sander W. van der Laan | s.w.vanderlaan-2[at]umcutrecht.nl | [swvanderlaan.github.io](https://swvanderlaan.github.io).</sup>
+<sup>&copy; 1979-2021 Sander W. van der Laan | s.w.vanderlaan-2[at]umcutrecht.nl | [swvanderlaan.github.io](https://swvanderlaan.github.io).</sup>
 ------
 
