@@ -20,6 +20,9 @@
 # archived data
 _archived/*
 
+# proprietary data
+*.AEDB.dictionary.html
+
 # pyton
 venv/
 *.egg-info/*
