@@ -3,7 +3,7 @@
 [![DOI](https://zenodo.org/badge/292553561.svg)](https://zenodo.org/badge/latestdoi/292553561)
 
 #### This readme
-This readme accompanies the paper _"Monocyte-chemoattractant protein-1 Levels in Human Atherosclerosis Associate with Plaque Vulnerability."_ by [Georgakis M. & van der Laan S.W. *et al*. **bioRxiv 2020**](https://doi.org/10.1101/2020.09.04.20187955).
+This readme accompanies the paper _"Monocyte-chemoattractant protein-1 Levels in Human Atherosclerosis Associate with Plaque Vulnerability."_ by [Georgakis M. & van der Laan S.W. *et al*. **ATVB 2021**](https://doi.org/10.1161/atvbaha.121.316091); preprint: **bioRxiv 2020**](https://doi.org/10.1101/2020.09.04.20187955).
 
 
 --------------
